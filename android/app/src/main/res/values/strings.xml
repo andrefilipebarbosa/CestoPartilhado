@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cesto Partilhado</string>
+
+    <string name="action_continue">Continue</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_create">Create</string>
+    <string name="action_add">Add</string>
+    <string name="action_remove">Remove</string>
+    <string name="action_recover">Recover</string>
+    <string name="action_share">Share</string>
+    <string name="action_invite">Invite</string>
+    <string name="action_close_list">Complete and close list</string>
+    <string name="action_sign_in_google">Continue with Google</string>
+
+    <string name="login_welcome">Welcome</string>
+    <string name="login_subtitle">Create shopping lists for several stores and share them with anyone you like.</string>
+    <string name="login_legal">By continuing, you agree to the %1$s and the %2$s.</string>
+    <string name="terms_of_service">Terms of Service</string>
+    <string name="privacy_policy">Privacy Policy</string>
+
+    <string name="home_title">Your lists</string>
+    <string name="home_greeting">Hello, %1$s</string>
+    <string name="home_active_count">%1$d active</string>
+    <string name="home_stores_count">%1$d stores</string>
+    <string name="home_items_progress">%1$d/%2$d purchased</string>
+    <string name="home_empty">You don\'t have any lists yet. Tap + to create your first one.</string>
+    <string name="nav_lists">Lists</string>
+    <string name="nav_archive">Archive</string>
+    <string name="nav_settings">Settings</string>
+
+    <string name="new_list_title">New list</string>
+    <string name="new_list_name_label">List name</string>
+    <string name="new_list_name_placeholder">E.g. Monthly shopping</string>
+    <string name="new_list_stores_label">Stores</string>
+    <string name="new_list_stores_subtitle">Add the stores you\'ll shop at</string>
+    <string name="new_list_search_placeholder">Search or add a store</string>
+    <string name="new_list_add_store">Add \"%1$s\" as a new store</string>
+    <string name="new_list_stores_added">Stores added · %1$d</string>
+    <string name="new_list_create_button">Create list</string>
+    <string name="new_list_no_matches">No existing stores match</string>
+
+    <string name="list_detail_stores_count">%1$d stores</string>
+    <string name="list_detail_add_item">Add item</string>
+    <string name="list_detail_add_store">Add store</string>
+    <string name="list_detail_close_button">Complete and close list</string>
+    <string name="list_detail_delete_button">Delete list</string>
+    <string name="list_detail_owner_only">Only the list creator can delete it</string>
+    <string name="item_name_placeholder">Item name</string>
+
+    <string name="invite_title">Invite people</string>
+    <string name="invite_subtitle">Invited people can view, add and remove items in this list.</string>
+    <string name="invite_share_link">Share invite link</string>
+    <string name="invite_email_placeholder">Person\'s email</string>
+    <string name="invite_button">Invite</string>
+    <string name="invite_people_with_access">People with access · %1$d</string>
+    <string name="invite_role_owner">Owner</string>
+    <string name="invite_role_editor">Editor</string>
+    <string name="invite_role_pending">Pending</string>
+    <string name="invite_sent">Invite sent</string>
+    <string name="invite_error_owner_only">Only the list creator can invite people</string>
+
+    <string name="archived_title">Archive</string>
+    <string name="archived_subtitle">Closed shopping lists</string>
+    <string name="archived_notice">Closed lists are automatically deleted 30 days after being closed.</string>
+    <string name="archived_deletes_in">Deletes in %1$d days</string>
+    <string name="archived_delete_now">Delete now</string>
+    <string name="archived_empty">You don\'t have any closed lists yet.</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_system">Automatic (phone language)</string>
+    <string name="settings_language_pt">Portuguese</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_export_title">My data</string>
+    <string name="settings_export_subtitle">Download everything we have about you — every list you have access to, as a text file.</string>
+    <string name="settings_export_button">Export my data</string>
+    <string name="settings_sign_out">Sign out</string>
+    <string name="settings_legal">Legal documents</string>
+
+    <string name="export_header">Data export — Cesto Partilhado</string>
+    <string name="export_generated_at">Generated on %1$s</string>
+    <string name="export_account">Account: %1$s</string>
+    <string name="export_list_owner">(created by you)</string>
+    <string name="export_list_shared">(shared with you)</string>
+    <string name="export_store_progress">%1$d/%2$d purchased</string>
+    <string name="export_item_bought">[purchased]</string>
+    <string name="export_item_pending">[pending]</string>
+    <string name="export_no_lists">You don\'t have any lists yet.</string>
+    <string name="export_active_lists">ACTIVE LISTS</string>
+    <string name="export_closed_lists">CLOSED LISTS</string>
+
+    <string name="error_generic">Something went wrong. Please try again.</string>
+    <string name="error_network">No internet connection.</string>
+</resources>

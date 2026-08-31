@@ -1,0 +1,91 @@
+"app_name" = "Cesto Partilhado";
+
+"action_continue" = "Continuar";
+"action_cancel" = "Cancelar";
+"action_save" = "Guardar";
+"action_delete" = "Eliminar";
+"action_create" = "Criar";
+"action_add" = "Adicionar";
+"action_remove" = "Remover";
+"action_recover" = "Recuperar";
+"action_share" = "Partilhar";
+"action_invite" = "Convidar";
+"action_close_list" = "Concluir e fechar lista";
+"action_sign_in_google" = "Continuar com Google";
+
+"login_welcome" = "Bem-vindo(a)";
+"login_subtitle" = "Cria listas de compras para várias lojas e partilha-as com quem quiseres.";
+"terms_of_service" = "Termos de Serviço";
+"privacy_policy" = "Política de Privacidade";
+
+"home_title" = "As tuas listas";
+"home_greeting" = "Olá, %@";
+"home_stores_count" = "%d lojas";
+"home_items_progress" = "%d/%d comprados";
+"home_empty" = "Ainda não tens listas. Toca em + para criar a primeira.";
+"nav_lists" = "Listas";
+"nav_archive" = "Arquivo";
+"nav_settings" = "Definições";
+
+"new_list_title" = "Nova lista";
+"new_list_name_label" = "Nome da lista";
+"new_list_name_placeholder" = "Ex: Compras do mês";
+"new_list_stores_label" = "Lojas";
+"new_list_stores_subtitle" = "Adiciona as lojas onde vais fazer compras";
+"new_list_search_placeholder" = "Procurar ou adicionar loja";
+"new_list_add_store" = "Adicionar \"%@\" como nova loja";
+"new_list_stores_added" = "Lojas adicionadas · %d";
+"new_list_create_button" = "Criar lista";
+"new_list_no_matches" = "Sem lojas existentes com esse nome";
+
+"list_detail_stores_count" = "%d lojas";
+"list_detail_add_item" = "Adicionar artigo";
+"list_detail_add_store" = "Adicionar loja";
+"list_detail_delete_button" = "Eliminar lista";
+"list_detail_owner_only" = "Só quem criou a lista a pode eliminar";
+"item_name_placeholder" = "Nome do artigo";
+
+"invite_title" = "Convidar pessoas";
+"invite_subtitle" = "As pessoas convidadas podem ver, adicionar e remover artigos desta lista.";
+"invite_share_link" = "Partilhar link de convite";
+"invite_email_placeholder" = "Email da pessoa";
+"invite_button" = "Convidar";
+"invite_people_with_access" = "Pessoas com acesso · %d";
+"invite_role_owner" = "Dono";
+"invite_role_editor" = "Editor";
+"invite_role_pending" = "Pendente";
+"invite_sent" = "Convite enviado";
+"invite_error_owner_only" = "Só o criador da lista pode convidar pessoas";
+
+"archived_title" = "Arquivo";
+"archived_subtitle" = "Listas de compras fechadas";
+"archived_notice" = "As listas fechadas são eliminadas automaticamente 30 dias depois de serem fechadas.";
+"archived_deletes_in" = "Elimina-se em %d dias";
+"archived_delete_now" = "Eliminar agora";
+"archived_empty" = "Ainda não tens listas fechadas.";
+
+"settings_title" = "Definições";
+"settings_language" = "Idioma";
+"settings_language_system" = "Automático (idioma do telefone)";
+"settings_language_pt" = "Português";
+"settings_language_en" = "Inglês";
+"settings_export_title" = "Os meus dados";
+"settings_export_subtitle" = "Descarrega tudo o que temos sobre ti — todas as listas a que tens acesso, em formato de texto.";
+"settings_export_button" = "Exportar os meus dados";
+"settings_sign_out" = "Terminar sessão";
+"settings_legal" = "Documentos legais";
+
+"export_header" = "Exportação de dados — Cesto Partilhado";
+"export_generated_at" = "Gerado em %@";
+"export_account" = "Conta: %@";
+"export_list_owner" = "(criada por ti)";
+"export_list_shared" = "(partilhada contigo)";
+"export_store_progress" = "%d/%d comprados";
+"export_item_bought" = "[comprado]";
+"export_item_pending" = "[por comprar]";
+"export_no_lists" = "Ainda não tens listas.";
+"export_active_lists" = "LISTAS ATIVAS";
+"export_closed_lists" = "LISTAS FECHADAS";
+
+"error_generic" = "Algo correu mal. Tenta novamente.";
+"error_network" = "Sem ligação à internet.";

@@ -1,0 +1,20 @@
+# Android
+android/.gradle/
+android/local.properties
+android/app/google-services.json
+android/**/build/
+android/.idea/
+
+# iOS
+ios/CestoPartilhado.xcodeproj/
+ios/CestoPartilhado/GoogleService-Info.plist
+ios/DerivedData/
+ios/.build/
+
+# Firebase
+firebase/functions/node_modules/
+firebase/functions/lib/
+firebase/.firebaserc
+firebase/.runtimeconfig.json
+
+.DS_Store

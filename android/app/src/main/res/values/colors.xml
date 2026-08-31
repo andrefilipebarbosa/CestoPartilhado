@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#FDF8ED</color>
+    <color name="surface">#FFFDF9</color>
+    <color name="surface_2">#F6EFE3</color>
+    <color name="border">#E2DDD4</color>
+    <color name="text">#1F1A10</color>
+    <color name="text_2">#635D51</color>
+    <color name="text_3">#918C80</color>
+    <color name="green">#409D48</color>
+    <color name="green_dark">#146720</color>
+    <color name="green_tint">#D7F5D7</color>
+    <color name="orange">#D67523</color>
+    <color name="orange_dark">#8C3F00</color>
+    <color name="orange_tint">#FFE1C6</color>
+    <color name="ic_launcher_background">#FDF8ED</color>
+</resources>

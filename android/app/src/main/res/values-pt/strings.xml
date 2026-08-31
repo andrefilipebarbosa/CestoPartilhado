@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Cesto Partilhado</string>
+
+    <string name="action_continue">Continuar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_save">Guardar</string>
+    <string name="action_delete">Eliminar</string>
+    <string name="action_create">Criar</string>
+    <string name="action_add">Adicionar</string>
+    <string name="action_remove">Remover</string>
+    <string name="action_recover">Recuperar</string>
+    <string name="action_share">Partilhar</string>
+    <string name="action_invite">Convidar</string>
+    <string name="action_close_list">Concluir e fechar lista</string>
+    <string name="action_sign_in_google">Continuar com Google</string>
+
+    <string name="login_welcome">Bem-vindo(a)</string>
+    <string name="login_subtitle">Cria listas de compras para várias lojas e partilha-as com quem quiseres.</string>
+    <string name="login_legal">Ao continuar, aceitas os %1$s e a %2$s.</string>
+    <string name="terms_of_service">Termos de Serviço</string>
+    <string name="privacy_policy">Política de Privacidade</string>
+
+    <string name="home_title">As tuas listas</string>
+    <string name="home_greeting">Olá, %1$s</string>
+    <string name="home_active_count">%1$d ativas</string>
+    <string name="home_stores_count">%1$d lojas</string>
+    <string name="home_items_progress">%1$d/%2$d comprados</string>
+    <string name="home_empty">Ainda não tens listas. Toca em + para criar a primeira.</string>
+    <string name="nav_lists">Listas</string>
+    <string name="nav_archive">Arquivo</string>
+    <string name="nav_settings">Definições</string>
+
+    <string name="new_list_title">Nova lista</string>
+    <string name="new_list_name_label">Nome da lista</string>
+    <string name="new_list_name_placeholder">Ex: Compras do mês</string>
+    <string name="new_list_stores_label">Lojas</string>
+    <string name="new_list_stores_subtitle">Adiciona as lojas onde vais fazer compras</string>
+    <string name="new_list_search_placeholder">Procurar ou adicionar loja</string>
+    <string name="new_list_add_store">Adicionar \"%1$s\" como nova loja</string>
+    <string name="new_list_stores_added">Lojas adicionadas · %1$d</string>
+    <string name="new_list_create_button">Criar lista</string>
+    <string name="new_list_no_matches">Sem lojas existentes com esse nome</string>
+
+    <string name="list_detail_stores_count">%1$d lojas</string>
+    <string name="list_detail_add_item">Adicionar artigo</string>
+    <string name="list_detail_add_store">Adicionar loja</string>
+    <string name="list_detail_close_button">Concluir e fechar lista</string>
+    <string name="list_detail_delete_button">Eliminar lista</string>
+    <string name="list_detail_owner_only">Só quem criou a lista a pode eliminar</string>
+    <string name="item_name_placeholder">Nome do artigo</string>
+
+    <string name="invite_title">Convidar pessoas</string>
+    <string name="invite_subtitle">As pessoas convidadas podem ver, adicionar e remover artigos desta lista.</string>
+    <string name="invite_share_link">Partilhar link de convite</string>
+    <string name="invite_email_placeholder">Email da pessoa</string>
+    <string name="invite_button">Convidar</string>
+    <string name="invite_people_with_access">Pessoas com acesso · %1$d</string>
+    <string name="invite_role_owner">Dono</string>
+    <string name="invite_role_editor">Editor</string>
+    <string name="invite_role_pending">Pendente</string>
+    <string name="invite_sent">Convite enviado</string>
+    <string name="invite_error_owner_only">Só o criador da lista pode convidar pessoas</string>
+
+    <string name="archived_title">Arquivo</string>
+    <string name="archived_subtitle">Listas de compras fechadas</string>
+    <string name="archived_notice">As listas fechadas são eliminadas automaticamente 30 dias depois de serem fechadas.</string>
+    <string name="archived_deletes_in">Elimina-se em %1$d dias</string>
+    <string name="archived_delete_now">Eliminar agora</string>
+    <string name="archived_empty">Ainda não tens listas fechadas.</string>
+
+    <string name="settings_title">Definições</string>
+    <string name="settings_language">Idioma</string>
+    <string name="settings_language_system">Automático (idioma do telefone)</string>
+    <string name="settings_language_pt">Português</string>
+    <string name="settings_language_en">Inglês</string>
+    <string name="settings_export_title">Os meus dados</string>
+    <string name="settings_export_subtitle">Descarrega tudo o que temos sobre ti — todas as listas a que tens acesso, em formato de texto.</string>
+    <string name="settings_export_button">Exportar os meus dados</string>
+    <string name="settings_sign_out">Terminar sessão</string>
+    <string name="settings_legal">Documentos legais</string>
+
+    <string name="export_header">Exportação de dados — Cesto Partilhado</string>
+    <string name="export_generated_at">Gerado em %1$s</string>
+    <string name="export_account">Conta: %1$s</string>
+    <string name="export_list_owner">(criada por ti)</string>
+    <string name="export_list_shared">(partilhada contigo)</string>
+    <string name="export_store_progress">%1$d/%2$d comprados</string>
+    <string name="export_item_bought">[comprado]</string>
+    <string name="export_item_pending">[por comprar]</string>
+    <string name="export_no_lists">Ainda não tens listas.</string>
+    <string name="export_active_lists">LISTAS ATIVAS</string>
+    <string name="export_closed_lists">LISTAS FECHADAS</string>
+
+    <string name="error_generic">Algo correu mal. Tenta novamente.</string>
+    <string name="error_network">Sem ligação à internet.</string>
+</resources>

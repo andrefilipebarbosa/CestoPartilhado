@@ -1,0 +1,71 @@
+rules_version = '2';
+
+// Modelo de dados:
+//   users/{uid}                                    perfil do utilizador
+//   lists/{listId}                                  { name, ownerId, memberIds[], pendingInvites[], status, createdAt, updatedAt, closedAt }
+//   lists/{listId}/stores/{storeId}                 { name, order, createdAt }
+//   lists/{listId}/stores/{storeId}/items/{itemId}  { name, note, bought, addedBy, boughtBy, createdAt, updatedAt }
+//   storeCatalog/{storeId}                          catálogo global de lojas para autocompletar
+//
+// Regra de negócio central: qualquer membro (dono ou convidado) pode ler/escrever
+// artigos e lojas. Só o dono pode apagar a lista. A composição de memberIds só
+// é alterada pelas Cloud Functions (com privilégios de admin), nunca diretamente
+// pelo cliente — por isso os campos ownerId/memberIds/pendingInvites são
+// bloqueados a escrita direta nas regras abaixo.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function getList(listId) {
+      return get(/databases/$(database)/documents/lists/$(listId)).data;
+    }
+
+    function isListMember(listData) {
+      return isSignedIn() &&
+        (listData.ownerId == request.auth.uid || (request.auth.uid in listData.memberIds));
+    }
+
+    match /users/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    match /lists/{listId} {
+      allow read: if isListMember(resource.data);
+
+      allow create: if isSignedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.memberIds is list
+        && request.auth.uid in request.resource.data.memberIds
+        && request.resource.data.status == "active";
+
+      // Renomear e fechar/reabrir são permitidos a qualquer membro, mas
+      // ninguém pode mudar o dono nem a lista de membros/convites por aqui.
+      allow update: if isListMember(resource.data)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.memberIds == resource.data.memberIds
+        && request.resource.data.pendingInvites == resource.data.pendingInvites;
+
+      allow delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+
+      match /stores/{storeId} {
+        allow read, create, update, delete: if isListMember(getList(listId));
+
+        match /items/{itemId} {
+          allow read, create, update, delete: if isListMember(getList(listId));
+        }
+      }
+    }
+
+    match /storeCatalog/{storeId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0;
+      allow update: if isSignedIn();
+    }
+  }
+}

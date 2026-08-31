@@ -1,0 +1,91 @@
+"app_name" = "Cesto Partilhado";
+
+"action_continue" = "Continue";
+"action_cancel" = "Cancel";
+"action_save" = "Save";
+"action_delete" = "Delete";
+"action_create" = "Create";
+"action_add" = "Add";
+"action_remove" = "Remove";
+"action_recover" = "Recover";
+"action_share" = "Share";
+"action_invite" = "Invite";
+"action_close_list" = "Complete and close list";
+"action_sign_in_google" = "Continue with Google";
+
+"login_welcome" = "Welcome";
+"login_subtitle" = "Create shopping lists for several stores and share them with anyone you like.";
+"terms_of_service" = "Terms of Service";
+"privacy_policy" = "Privacy Policy";
+
+"home_title" = "Your lists";
+"home_greeting" = "Hello, %@";
+"home_stores_count" = "%d stores";
+"home_items_progress" = "%d/%d purchased";
+"home_empty" = "You don't have any lists yet. Tap + to create your first one.";
+"nav_lists" = "Lists";
+"nav_archive" = "Archive";
+"nav_settings" = "Settings";
+
+"new_list_title" = "New list";
+"new_list_name_label" = "List name";
+"new_list_name_placeholder" = "E.g. Monthly shopping";
+"new_list_stores_label" = "Stores";
+"new_list_stores_subtitle" = "Add the stores you'll shop at";
+"new_list_search_placeholder" = "Search or add a store";
+"new_list_add_store" = "Add \"%@\" as a new store";
+"new_list_stores_added" = "Stores added · %d";
+"new_list_create_button" = "Create list";
+"new_list_no_matches" = "No existing stores match";
+
+"list_detail_stores_count" = "%d stores";
+"list_detail_add_item" = "Add item";
+"list_detail_add_store" = "Add store";
+"list_detail_delete_button" = "Delete list";
+"list_detail_owner_only" = "Only the list creator can delete it";
+"item_name_placeholder" = "Item name";
+
+"invite_title" = "Invite people";
+"invite_subtitle" = "Invited people can view, add and remove items in this list.";
+"invite_share_link" = "Share invite link";
+"invite_email_placeholder" = "Person's email";
+"invite_button" = "Invite";
+"invite_people_with_access" = "People with access · %d";
+"invite_role_owner" = "Owner";
+"invite_role_editor" = "Editor";
+"invite_role_pending" = "Pending";
+"invite_sent" = "Invite sent";
+"invite_error_owner_only" = "Only the list creator can invite people";
+
+"archived_title" = "Archive";
+"archived_subtitle" = "Closed shopping lists";
+"archived_notice" = "Closed lists are automatically deleted 30 days after being closed.";
+"archived_deletes_in" = "Deletes in %d days";
+"archived_delete_now" = "Delete now";
+"archived_empty" = "You don't have any closed lists yet.";
+
+"settings_title" = "Settings";
+"settings_language" = "Language";
+"settings_language_system" = "Automatic (phone language)";
+"settings_language_pt" = "Portuguese";
+"settings_language_en" = "English";
+"settings_export_title" = "My data";
+"settings_export_subtitle" = "Download everything we have about you — every list you have access to, as a text file.";
+"settings_export_button" = "Export my data";
+"settings_sign_out" = "Sign out";
+"settings_legal" = "Legal documents";
+
+"export_header" = "Data export — Cesto Partilhado";
+"export_generated_at" = "Generated on %@";
+"export_account" = "Account: %@";
+"export_list_owner" = "(created by you)";
+"export_list_shared" = "(shared with you)";
+"export_store_progress" = "%d/%d purchased";
+"export_item_bought" = "[purchased]";
+"export_item_pending" = "[pending]";
+"export_no_lists" = "You don't have any lists yet.";
+"export_active_lists" = "ACTIVE LISTS";
+"export_closed_lists" = "CLOSED LISTS";
+
+"error_generic" = "Something went wrong. Please try again.";
+"error_network" = "No internet connection.";
