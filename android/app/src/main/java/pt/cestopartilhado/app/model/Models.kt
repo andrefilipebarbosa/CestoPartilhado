@@ -71,3 +71,38 @@ data class ListWithStores(
     val totalItems get() = stores.sumOf { it.items.size }
     val boughtItems get() = stores.sumOf { it.boughtCount }
 }
+
+/**
+ * Lista dividida: os artigos têm um valor, e cada membro deve uma parte igual
+ * do total. Assim que `paidMemberIds` deixa de estar vazio a lista fica
+ * bloqueada a alterações (reforçado nas regras do Firestore, não só aqui).
+ */
+data class SplitList(
+    @DocumentId val id: String = "",
+    val name: String = "",
+    val ownerId: String = "",
+    val memberIds: List<String> = emptyList(),
+    val pendingInvites: List<String> = emptyList(),
+    val paidMemberIds: List<String> = emptyList(),
+    val totalValue: Double = 0.0,
+    val itemCount: Long = 0,
+    @ServerTimestamp val createdAt: Date? = null,
+    @ServerTimestamp val updatedAt: Date? = null,
+) {
+    val isLocked get() = paidMemberIds.isNotEmpty()
+    val shareValue get() = if (memberIds.isNotEmpty()) totalValue / memberIds.size else 0.0
+}
+
+data class SplitItem(
+    @DocumentId val id: String = "",
+    val name: String = "",
+    val value: Double = 0.0,
+    val addedBy: String = "",
+    @ServerTimestamp val createdAt: Date? = null,
+    @ServerTimestamp val updatedAt: Date? = null,
+)
+
+data class SplitListWithItems(
+    val list: SplitList,
+    val items: List<SplitItem>,
+)

@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pt.cestopartilhado.app.R
 import pt.cestopartilhado.app.model.ShoppingList
+import pt.cestopartilhado.app.model.SplitList
 import pt.cestopartilhado.app.ui.components.AvatarCircle
 import pt.cestopartilhado.app.ui.components.BottomDestination
 import pt.cestopartilhado.app.ui.components.CestoBottomBar
@@ -48,9 +49,12 @@ fun HomeScreen(
     viewModel: HomeViewModel,
     onOpenList: (String) -> Unit,
     onCreateList: () -> Unit,
+    onOpenSplitList: (String) -> Unit,
+    onCreateSplitList: () -> Unit,
     onNavigate: (BottomDestination) -> Unit,
 ) {
     val lists by viewModel.activeLists.collectAsState()
+    val splitLists by viewModel.splitLists.collectAsState()
 
     Scaffold(
         containerColor = CestoColors.Bg,
@@ -61,54 +65,105 @@ fun HomeScreen(
             }
         },
     ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 20.dp)) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth().padding(top = 20.dp, bottom = 20.dp),
-            ) {
-                Text(
-                    text = stringResource(R.string.home_greeting, viewModel.displayName),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = CestoColors.Text,
-                )
-                AvatarCircle(label = viewModel.displayName.ifBlank { "?" }, size = 44.dp)
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 20.dp),
+            contentPadding = PaddingValues(bottom = 96.dp),
+        ) {
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth().padding(top = 20.dp, bottom = 20.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.home_greeting, viewModel.displayName),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = CestoColors.Text,
+                    )
+                    AvatarCircle(label = viewModel.displayName.ifBlank { "?" }, size = 44.dp)
+                }
             }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-            ) {
-                Text(
-                    text = stringResource(R.string.home_title),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = CestoColors.Text,
-                )
-                if (lists.isNotEmpty()) {
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                ) {
                     Text(
-                        text = stringResource(R.string.home_active_count, lists.size),
-                        style = MaterialTheme.typography.labelMedium,
+                        text = stringResource(R.string.home_title),
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.SemiBold,
-                        color = CestoColors.Text2,
-                        modifier = Modifier.background(CestoColors.Surface2, RoundedCornerShape(999.dp)).padding(horizontal = 10.dp, vertical = 4.dp),
+                        color = CestoColors.Text,
                     )
+                    if (lists.isNotEmpty()) {
+                        Text(
+                            text = stringResource(R.string.home_active_count, lists.size),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = CestoColors.Text2,
+                            modifier = Modifier.background(CestoColors.Surface2, RoundedCornerShape(999.dp)).padding(horizontal = 10.dp, vertical = 4.dp),
+                        )
+                    }
                 }
             }
 
             if (lists.isEmpty()) {
-                Text(
-                    text = stringResource(R.string.home_empty),
-                    color = CestoColors.Text3,
-                    modifier = Modifier.padding(top = 32.dp),
-                )
+                item {
+                    Text(
+                        text = stringResource(R.string.home_empty),
+                        color = CestoColors.Text3,
+                        modifier = Modifier.padding(bottom = 16.dp),
+                    )
+                }
             } else {
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(14.dp), contentPadding = PaddingValues(bottom = 96.dp)) {
-                    items(lists, key = { it.id }) { list ->
-                        ListCard(list = list, selfLabel = viewModel.displayName, onClick = { onOpenList(list.id) })
-                    }
+                items(lists, key = { "shopping-${it.id}" }) { list ->
+                    ListCard(
+                        list = list,
+                        selfLabel = viewModel.displayName,
+                        onClick = { onOpenList(list.id) },
+                        modifier = Modifier.padding(bottom = 14.dp),
+                    )
+                }
+            }
+
+            item {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth().padding(top = 20.dp, bottom = 16.dp),
+                ) {
+                    Text(
+                        text = stringResource(R.string.home_split_lists_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        color = CestoColors.Text,
+                    )
+                    Text(
+                        text = stringResource(R.string.home_new_split_list),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = CestoColors.GreenDark,
+                        modifier = Modifier.clickable(onClick = onCreateSplitList),
+                    )
+                }
+            }
+
+            if (splitLists.isEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(R.string.home_split_lists_empty),
+                        color = CestoColors.Text3,
+                    )
+                }
+            } else {
+                items(splitLists, key = { "split-${it.id}" }) { list ->
+                    SplitListCard(
+                        list = list,
+                        onClick = { onOpenSplitList(list.id) },
+                        modifier = Modifier.padding(bottom = 14.dp),
+                    )
                 }
             }
         }
@@ -116,13 +171,13 @@ fun HomeScreen(
 }
 
 @Composable
-private fun ListCard(list: ShoppingList, selfLabel: String, onClick: () -> Unit) {
+private fun ListCard(list: ShoppingList, selfLabel: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val extraMembers = (list.memberIds.size - 1).coerceAtLeast(0)
     val progress = if (list.itemCount > 0) list.boughtCount.toFloat() / list.itemCount.toFloat() else 0f
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(CestoColors.Surface, RoundedCornerShape(20.dp))
             .border(1.dp, CestoColors.Border, RoundedCornerShape(20.dp))
@@ -178,6 +233,38 @@ private fun ListCard(list: ShoppingList, selfLabel: String, onClick: () -> Unit)
                 text = relativeTimeText(context, list.updatedAt),
                 style = MaterialTheme.typography.labelSmall,
                 color = CestoColors.Text3,
+            )
+        }
+    }
+}
+
+@Composable
+private fun SplitListCard(list: SplitList, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .background(CestoColors.Surface, RoundedCornerShape(20.dp))
+            .border(1.dp, CestoColors.Border, RoundedCornerShape(20.dp))
+            .clickable(onClick = onClick)
+            .padding(18.dp),
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(list.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = CestoColors.Text)
+            Text(
+                stringResource(R.string.split_card_summary, "%.2f €".format(list.totalValue), list.memberIds.size),
+                style = MaterialTheme.typography.bodySmall,
+                color = CestoColors.Text2,
+                modifier = Modifier.padding(top = 6.dp),
+            )
+        }
+        if (list.isLocked) {
+            Text(
+                stringResource(R.string.split_status_paid),
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = CestoColors.GreenDark,
+                modifier = Modifier.background(CestoColors.GreenTint, RoundedCornerShape(999.dp)).padding(horizontal = 10.dp, vertical = 4.dp),
             )
         }
     }

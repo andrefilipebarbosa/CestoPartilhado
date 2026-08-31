@@ -37,10 +37,14 @@ export const purgeClosedLists = onSchedule(
   }
 );
 
+/** As duas coleções que suportam convite por email — validado antes de usar em queries. */
+const INVITABLE_COLLECTIONS = ["lists", "splitLists"] as const;
+
 /**
- * Chamada pelo dono da lista para convidar alguém por email.
- * Se a pessoa já tiver conta, é adicionada de imediato aos membros.
- * Caso contrário fica em "pendingInvites" até criar conta (ver trigger abaixo).
+ * Chamada pelo dono da lista (de compras ou dividida) para convidar alguém
+ * por email. Se a pessoa já tiver conta, é adicionada de imediato aos
+ * membros. Caso contrário fica em "pendingInvites" até criar conta (ver
+ * trigger abaixo).
  */
 export const inviteMemberByEmail = onCall(
   { region: "europe-west1" },
@@ -52,11 +56,12 @@ export const inviteMemberByEmail = onCall(
 
     const listId = request.data?.listId as string | undefined;
     const email = (request.data?.email as string | undefined)?.trim().toLowerCase();
+    const collectionName = (request.data?.collection as string) === "splitLists" ? "splitLists" : "lists";
     if (!listId || !email) {
       throw new HttpsError("invalid-argument", "listId e email são obrigatórios.");
     }
 
-    const listRef = db.collection("lists").doc(listId);
+    const listRef = db.collection(collectionName).doc(listId);
     const listSnap = await listRef.get();
     if (!listSnap.exists) {
       throw new HttpsError("not-found", "Lista não encontrada.");
@@ -66,6 +71,13 @@ export const inviteMemberByEmail = onCall(
       throw new HttpsError(
         "permission-denied",
         "Só o criador da lista pode convidar pessoas."
+      );
+    }
+
+    if (collectionName === "splitLists" && (list.paidMemberIds ?? []).length > 0) {
+      throw new HttpsError(
+        "failed-precondition",
+        "A lista está bloqueada — reverte os pagamentos antes de convidar mais pessoas."
       );
     }
 
@@ -97,7 +109,8 @@ export const inviteMemberByEmail = onCall(
 
 /**
  * Quando alguém cria conta pela primeira vez, resolve automaticamente
- * qualquer convite pendente feito para o email dessa pessoa.
+ * qualquer convite pendente (em listas de compras ou divididas) feito para
+ * o email dessa pessoa.
  */
 export const resolvePendingInvitesOnSignUp = functionsV1
   .region("europe-west1")
@@ -106,23 +119,25 @@ export const resolvePendingInvitesOnSignUp = functionsV1
     if (!user.email) return;
     const email = user.email.toLowerCase();
 
-    const snapshot = await db
-      .collection("lists")
-      .where("pendingInvites", "array-contains", email)
-      .get();
+    for (const collectionName of INVITABLE_COLLECTIONS) {
+      const snapshot = await db
+        .collection(collectionName)
+        .where("pendingInvites", "array-contains", email)
+        .get();
 
-    if (snapshot.empty) return;
+      if (snapshot.empty) continue;
 
-    const batch = db.batch();
-    snapshot.docs.forEach((doc) => {
-      batch.update(doc.ref, {
-        memberIds: FieldValue.arrayUnion(user.uid),
-        pendingInvites: FieldValue.arrayRemove(email),
-        updatedAt: FieldValue.serverTimestamp(),
+      const batch = db.batch();
+      snapshot.docs.forEach((doc) => {
+        batch.update(doc.ref, {
+          memberIds: FieldValue.arrayUnion(user.uid),
+          pendingInvites: FieldValue.arrayRemove(email),
+          updatedAt: FieldValue.serverTimestamp(),
+        });
       });
-    });
-    await batch.commit();
-    logger.info(
-      `resolvePendingInvitesOnSignUp: ${user.uid} adicionado a ${snapshot.size} lista(s)`
-    );
+      await batch.commit();
+      logger.info(
+        `resolvePendingInvitesOnSignUp: ${user.uid} adicionado a ${snapshot.size} lista(s) em ${collectionName}`
+      );
+    }
   });

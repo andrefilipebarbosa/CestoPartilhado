@@ -27,6 +27,10 @@ import pt.cestopartilhado.app.ui.newlist.NewListScreen
 import pt.cestopartilhado.app.ui.newlist.NewListViewModel
 import pt.cestopartilhado.app.ui.settings.SettingsScreen
 import pt.cestopartilhado.app.ui.settings.SettingsViewModel
+import pt.cestopartilhado.app.ui.splitlist.NewSplitListScreen
+import pt.cestopartilhado.app.ui.splitlist.NewSplitListViewModel
+import pt.cestopartilhado.app.ui.splitlist.SplitListDetailScreen
+import pt.cestopartilhado.app.ui.splitlist.SplitListDetailViewModel
 import pt.cestopartilhado.app.ui.theme.CestoPartilhadoTheme
 import pt.cestopartilhado.app.util.LocaleManager
 
@@ -39,10 +43,13 @@ private object Routes {
     const val ARCHIVED = "archived"
     const val SETTINGS = "settings"
     const val LEGAL = "legal/{doc}"
+    const val NEW_SPLIT_LIST = "newSplitList"
+    const val SPLIT_LIST_DETAIL = "splitListDetail/{listId}"
 
     fun listDetail(listId: String) = "listDetail/$listId"
     fun invite(listId: String) = "invite/$listId"
     fun legal(doc: String) = "legal/$doc"
+    fun splitListDetail(listId: String) = "splitListDetail/$listId"
 }
 
 class MainActivity : ComponentActivity() {
@@ -92,6 +99,8 @@ private fun CestoApp(container: AppContainer) {
                 viewModel = vm,
                 onOpenList = { listId -> navController.navigate(Routes.listDetail(listId)) },
                 onCreateList = { navController.navigate(Routes.NEW_LIST) },
+                onOpenSplitList = { listId -> navController.navigate(Routes.splitListDetail(listId)) },
+                onCreateSplitList = { navController.navigate(Routes.NEW_SPLIT_LIST) },
                 onNavigate = ::goTo,
             )
         }
@@ -142,6 +151,28 @@ private fun CestoApp(container: AppContainer) {
         composable(Routes.LEGAL) { backStackEntry ->
             val doc = backStackEntry.arguments?.getString("doc") ?: return@composable
             LegalDocScreen(assetBaseName = doc, onBack = { navController.popBackStack() })
+        }
+        composable(Routes.NEW_SPLIT_LIST) {
+            val vm: NewSplitListViewModel = viewModel(factory = factory)
+            NewSplitListScreen(
+                viewModel = vm,
+                onBack = { navController.popBackStack() },
+                onCreated = { listId ->
+                    navController.navigate(Routes.splitListDetail(listId)) {
+                        popUpTo(Routes.HOME) { inclusive = false }
+                    }
+                },
+            )
+        }
+        composable(Routes.SPLIT_LIST_DETAIL) { backStackEntry ->
+            val listId = backStackEntry.arguments?.getString("listId") ?: return@composable
+            val vm: SplitListDetailViewModel = viewModel(factory = factory)
+            SplitListDetailScreen(
+                viewModel = vm,
+                listId = listId,
+                onBack = { navController.popBackStack() },
+                onDeleted = { navController.popBackStack(Routes.HOME, inclusive = false) },
+            )
         }
     }
 }

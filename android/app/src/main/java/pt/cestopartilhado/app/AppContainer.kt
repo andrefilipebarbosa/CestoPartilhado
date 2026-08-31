@@ -4,6 +4,7 @@ import android.content.Context
 import pt.cestopartilhado.app.data.AuthRepository
 import pt.cestopartilhado.app.data.ExportRepository
 import pt.cestopartilhado.app.data.ListsRepository
+import pt.cestopartilhado.app.data.SplitListsRepository
 import pt.cestopartilhado.app.data.StoreCatalogRepository
 
 /**
@@ -13,6 +14,7 @@ import pt.cestopartilhado.app.data.StoreCatalogRepository
 class AppContainer(context: Context) {
     val authRepository = AuthRepository(context.applicationContext)
     val listsRepository = ListsRepository()
+    val splitListsRepository = SplitListsRepository()
     val storeCatalogRepository = StoreCatalogRepository()
     val exportRepository = ExportRepository(context.applicationContext)
 }

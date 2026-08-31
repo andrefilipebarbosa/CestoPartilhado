@@ -98,4 +98,23 @@
 
     <string name="error_generic">Algo correu mal. Tenta novamente.</string>
     <string name="error_network">Sem ligação à internet.</string>
+
+    <string name="home_split_lists_title">Listas divididas</string>
+    <string name="home_new_split_list">+ Nova lista dividida</string>
+    <string name="home_split_lists_empty">Ainda não tens listas divididas.</string>
+    <string name="split_card_summary">%1$s · %2$d pessoas</string>
+    <string name="split_new_title">Nova lista dividida</string>
+    <string name="split_new_name_placeholder">Ex: Viagem à praia</string>
+    <string name="split_new_create_button">Criar lista dividida</string>
+    <string name="split_detail_total">Total: %1$s</string>
+    <string name="split_detail_your_share">A tua parte: %1$s</string>
+    <string name="split_detail_locked_notice">Lista bloqueada — o dono tem de reverter os pagamentos abaixo para voltar a poder editá-la.</string>
+    <string name="split_item_name_placeholder">Nome do artigo</string>
+    <string name="split_item_value_placeholder">Valor</string>
+    <string name="split_people_title">Pessoas · %1$d</string>
+    <string name="split_status_paid">Pago</string>
+    <string name="split_status_owing">Em dívida</string>
+    <string name="split_invite_email_placeholder">Convidar por email</string>
+    <string name="split_delete_list">Eliminar lista dividida</string>
+    <string name="split_owner_only_payments">Só o criador da lista pode marcar pagamentos</string>
 </resources>

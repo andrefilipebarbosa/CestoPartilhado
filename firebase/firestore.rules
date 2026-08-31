@@ -6,12 +6,20 @@ rules_version = '2';
 //   lists/{listId}/stores/{storeId}                 { name, order, createdAt }
 //   lists/{listId}/stores/{storeId}/items/{itemId}  { name, note, bought, addedBy, boughtBy, createdAt, updatedAt }
 //   storeCatalog/{storeId}                          catálogo global de lojas para autocompletar
+//   splitLists/{listId}                             { name, ownerId, memberIds[], pendingInvites[],
+//                                                      paidMemberIds[], totalValue, itemCount, createdAt, updatedAt }
+//   splitLists/{listId}/items/{itemId}              { name, value, addedBy, createdAt, updatedAt }
 //
 // Regra de negócio central: qualquer membro (dono ou convidado) pode ler/escrever
 // artigos e lojas. Só o dono pode apagar a lista. A composição de memberIds só
 // é alterada pelas Cloud Functions (com privilégios de admin), nunca diretamente
 // pelo cliente — por isso os campos ownerId/memberIds/pendingInvites são
 // bloqueados a escrita direta nas regras abaixo.
+//
+// Nas listas divididas ("splitLists"), assim que `paidMemberIds` deixa de estar
+// vazio a lista fica bloqueada: ninguém pode alterar artigos, e só o dono pode
+// voltar a mexer no documento da lista (só no campo `paidMemberIds`, para
+// reverter alguém de "pago" para "em dívida").
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -57,6 +65,47 @@ service cloud.firestore {
         match /items/{itemId} {
           allow read, create, update, delete: if isListMember(getList(listId));
         }
+      }
+    }
+
+    match /splitLists/{listId} {
+      function isSplitMember(data) {
+        return isSignedIn() && (data.ownerId == request.auth.uid || request.auth.uid in data.memberIds);
+      }
+      function isSplitOwner(data) {
+        return isSignedIn() && data.ownerId == request.auth.uid;
+      }
+      function isUnlocked(data) {
+        return data.paidMemberIds.size() == 0;
+      }
+
+      allow read: if isSplitMember(resource.data);
+
+      allow create: if isSignedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.memberIds is list
+        && request.auth.uid in request.resource.data.memberIds
+        && request.resource.data.paidMemberIds.size() == 0;
+
+      // Ou o dono só mexe em paidMemberIds (marcar/reverter pagamentos), ou
+      // qualquer membro edita o resto (ex.: nome) mas só enquanto a lista
+      // estiver desbloqueada — nunca os dois ao mesmo tempo.
+      allow update: if isSplitMember(resource.data)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.memberIds == resource.data.memberIds
+        && request.resource.data.pendingInvites == resource.data.pendingInvites
+        && (
+          (isSplitOwner(resource.data)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['paidMemberIds', 'updatedAt']))
+          || (isUnlocked(resource.data) && isUnlocked(request.resource.data))
+        );
+
+      allow delete: if isSplitOwner(resource.data);
+
+      match /items/{itemId} {
+        allow read: if isSplitMember(get(/databases/$(database)/documents/splitLists/$(listId)).data);
+        allow create, update, delete: if isSplitMember(get(/databases/$(database)/documents/splitLists/$(listId)).data)
+          && isUnlocked(get(/databases/$(database)/documents/splitLists/$(listId)).data);
       }
     }
 

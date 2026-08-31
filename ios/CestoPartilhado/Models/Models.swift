@@ -57,3 +57,36 @@ struct ListWithStores: Equatable {
     var totalItems: Int { stores.reduce(0) { $0 + $1.items.count } }
     var boughtItems: Int { stores.reduce(0) { $0 + $1.boughtCount } }
 }
+
+/// Lista dividida: os artigos têm um valor, e cada membro deve uma parte igual
+/// do total. Assim que `paidMemberIds` deixa de estar vazio a lista fica
+/// bloqueada a alterações (reforçado nas regras do Firestore, não só aqui).
+struct SplitList: Identifiable, Codable, Equatable {
+    @DocumentID var id: String?
+    var name: String = ""
+    var ownerId: String = ""
+    var memberIds: [String] = []
+    var pendingInvites: [String] = []
+    var paidMemberIds: [String] = []
+    var totalValue: Double = 0
+    var itemCount: Int = 0
+    @ServerTimestamp var createdAt: Timestamp?
+    @ServerTimestamp var updatedAt: Timestamp?
+
+    var isLocked: Bool { !paidMemberIds.isEmpty }
+    var shareValue: Double { memberIds.isEmpty ? 0 : totalValue / Double(memberIds.count) }
+}
+
+struct SplitItem: Identifiable, Codable, Equatable {
+    @DocumentID var id: String?
+    var name: String = ""
+    var value: Double = 0
+    var addedBy: String = ""
+    @ServerTimestamp var createdAt: Timestamp?
+    @ServerTimestamp var updatedAt: Timestamp?
+}
+
+struct SplitListWithItems: Equatable {
+    var list: SplitList
+    var items: [SplitItem]
+}

@@ -98,4 +98,23 @@
 
     <string name="error_generic">Something went wrong. Please try again.</string>
     <string name="error_network">No internet connection.</string>
+
+    <string name="home_split_lists_title">Split lists</string>
+    <string name="home_new_split_list">+ New split list</string>
+    <string name="home_split_lists_empty">You don\'t have any split lists yet.</string>
+    <string name="split_card_summary">%1$s · %2$d people</string>
+    <string name="split_new_title">New split list</string>
+    <string name="split_new_name_placeholder">E.g. Trip to the beach</string>
+    <string name="split_new_create_button">Create split list</string>
+    <string name="split_detail_total">Total: %1$s</string>
+    <string name="split_detail_your_share">Your share: %1$s</string>
+    <string name="split_detail_locked_notice">List locked — the owner must revert the payments below before it can be edited again.</string>
+    <string name="split_item_name_placeholder">Item name</string>
+    <string name="split_item_value_placeholder">Value</string>
+    <string name="split_people_title">People · %1$d</string>
+    <string name="split_status_paid">Paid</string>
+    <string name="split_status_owing">Owing</string>
+    <string name="split_invite_email_placeholder">Invite by email</string>
+    <string name="split_delete_list">Delete split list</string>
+    <string name="split_owner_only_payments">Only the list creator can mark payments</string>
 </resources>

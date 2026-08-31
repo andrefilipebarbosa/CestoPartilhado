@@ -94,3 +94,22 @@
 
 "error_generic" = "Something went wrong. Please try again.";
 "error_network" = "No internet connection.";
+
+"home_split_lists_title" = "Split lists";
+"home_new_split_list" = "+ New split list";
+"home_split_lists_empty" = "You don't have any split lists yet.";
+"split_card_summary" = "%@ · %d people";
+"split_new_title" = "New split list";
+"split_new_name_placeholder" = "E.g. Trip to the beach";
+"split_new_create_button" = "Create split list";
+"split_detail_total" = "Total: %@";
+"split_detail_your_share" = "Your share: %@";
+"split_detail_locked_notice" = "List locked — the owner must revert the payments below before it can be edited again.";
+"split_item_name_placeholder" = "Item name";
+"split_item_value_placeholder" = "Value";
+"split_people_title" = "People · %d";
+"split_status_paid" = "Paid";
+"split_status_owing" = "Owing";
+"split_invite_email_placeholder" = "Invite by email";
+"split_delete_list" = "Delete split list";
+"split_owner_only_payments" = "Only the list creator can mark payments";

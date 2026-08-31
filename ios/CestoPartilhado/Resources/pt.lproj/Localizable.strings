@@ -94,3 +94,22 @@
 
 "error_generic" = "Algo correu mal. Tenta novamente.";
 "error_network" = "Sem ligação à internet.";
+
+"home_split_lists_title" = "Listas divididas";
+"home_new_split_list" = "+ Nova lista dividida";
+"home_split_lists_empty" = "Ainda não tens listas divididas.";
+"split_card_summary" = "%@ · %d pessoas";
+"split_new_title" = "Nova lista dividida";
+"split_new_name_placeholder" = "Ex: Viagem à praia";
+"split_new_create_button" = "Criar lista dividida";
+"split_detail_total" = "Total: %@";
+"split_detail_your_share" = "A tua parte: %@";
+"split_detail_locked_notice" = "Lista bloqueada — o dono tem de reverter os pagamentos abaixo para voltar a poder editá-la.";
+"split_item_name_placeholder" = "Nome do artigo";
+"split_item_value_placeholder" = "Valor";
+"split_people_title" = "Pessoas · %d";
+"split_status_paid" = "Pago";
+"split_status_owing" = "Em dívida";
+"split_invite_email_placeholder" = "Convidar por email";
+"split_delete_list" = "Eliminar lista dividida";
+"split_owner_only_payments" = "Só o criador da lista pode marcar pagamentos";
