@@ -113,7 +113,7 @@ private fun ArchivedCard(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth().padding(top = 14.dp),
         ) {
-            OutlinedButton(onClick = onRecover) {
+            OutlinedButton(onClick = onRecover, shape = RoundedCornerShape(12.dp)) {
                 Text(stringResource(R.string.action_recover), color = CestoColors.GreenDark, fontWeight = FontWeight.SemiBold)
             }
             if (isOwner) {

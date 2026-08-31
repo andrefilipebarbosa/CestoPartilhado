@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import pt.cestopartilhado.app.data.AuthRepository
 import pt.cestopartilhado.app.data.ListsRepository
@@ -23,6 +24,10 @@ class HomeViewModel(
         if (uid != null) {
             viewModelScope.launch {
                 listsRepository.observeLists(uid, ShoppingList.STATUS_ACTIVE)
+                    // Se a sessão terminar enquanto este ecrã ainda está a ouvir o
+                    // Firestore, a subscrição passa a não ter permissão — ignoramos
+                    // o erro em vez de deixar a exceção rebentar a app.
+                    .catch { }
                     .collect { _activeLists.value = it }
             }
         }

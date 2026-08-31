@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import pt.cestopartilhado.app.data.AuthRepository
 import pt.cestopartilhado.app.data.ListsRepository
@@ -23,10 +24,14 @@ class InviteViewModel(
     val isInviting: StateFlow<Boolean> = _isInviting
 
     val isOwner: Boolean get() = _list.value?.ownerId == authRepository.currentUser?.uid
+    val currentUid: String? get() = authRepository.currentUser?.uid
+    val displayName: String get() = authRepository.currentUserProfile()?.displayName ?: ""
 
     fun load(listId: String) {
         viewModelScope.launch {
-            listsRepository.observeListWithStores(listId).collect { _list.value = it.list }
+            listsRepository.observeListWithStores(listId)
+                .catch { }
+                .collect { _list.value = it.list }
         }
     }
 

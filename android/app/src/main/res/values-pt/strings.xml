@@ -27,6 +27,10 @@
     <string name="home_stores_count">%1$d lojas</string>
     <string name="home_items_progress">%1$d/%2$d comprados</string>
     <string name="home_empty">Ainda não tens listas. Toca em + para criar a primeira.</string>
+    <string name="time_just_now">Atualizada agora mesmo</string>
+    <string name="time_hours_ago">Atualizada há %1$dh</string>
+    <string name="time_yesterday">Atualizada ontem</string>
+    <string name="time_days_ago">Atualizada há %1$d dias</string>
     <string name="nav_lists">Listas</string>
     <string name="nav_archive">Arquivo</string>
     <string name="nav_settings">Definições</string>

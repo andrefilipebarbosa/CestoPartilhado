@@ -46,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -54,6 +55,7 @@ import pt.cestopartilhado.app.R
 import pt.cestopartilhado.app.model.ShoppingItem
 import pt.cestopartilhado.app.model.ShoppingList
 import pt.cestopartilhado.app.model.StoreWithItems
+import pt.cestopartilhado.app.ui.components.MemberAvatarStack
 import pt.cestopartilhado.app.ui.theme.CestoColors
 
 @Composable
@@ -93,6 +95,7 @@ fun ListDetailScreen(
                 if (list.status == ShoppingList.STATUS_ACTIVE) {
                     Button(
                         onClick = viewModel::closeList,
+                        shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = CestoColors.Green, contentColor = Color.White),
                         modifier = Modifier.fillMaxWidth().height(52.dp),
                     ) {
@@ -103,6 +106,7 @@ fun ListDetailScreen(
                 } else {
                     OutlinedButton(
                         onClick = viewModel::reopenList,
+                        shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.fillMaxWidth().height(52.dp),
                     ) {
                         Text(stringResource(R.string.action_recover), fontWeight = FontWeight.Bold, color = CestoColors.GreenDark)
@@ -146,13 +150,40 @@ fun ListDetailScreen(
                 }
             }
 
-            Text(
-                stringResource(R.string.list_detail_stores_count, listWithStores.stores.size) + "  ·  " +
-                    stringResource(R.string.home_items_progress, listWithStores.boughtItems, listWithStores.totalItems),
-                style = MaterialTheme.typography.bodySmall,
-                color = CestoColors.Text2,
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp),
-            )
+            val progress = if (listWithStores.totalItems > 0)
+                listWithStores.boughtItems.toFloat() / listWithStores.totalItems.toFloat() else 0f
+
+            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 4.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                ) {
+                    MemberAvatarStack(
+                        selfLabel = viewModel.displayName.ifBlank { "?" },
+                        extraMembers = (list.memberIds.size - 1).coerceAtLeast(0),
+                    )
+                    Text(
+                        stringResource(R.string.list_detail_stores_count, listWithStores.stores.size) + "  ·  " +
+                            stringResource(R.string.home_items_progress, listWithStores.boughtItems, listWithStores.totalItems),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = CestoColors.Text2,
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(6.dp)
+                        .background(CestoColors.Surface2, RoundedCornerShape(999.dp)),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(progress.coerceIn(0f, 1f))
+                            .height(6.dp)
+                            .background(CestoColors.Green, RoundedCornerShape(999.dp)),
+                    )
+                }
+            }
 
             if (addStoreOpen) {
                 Row(modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)) {
@@ -212,6 +243,19 @@ private fun StoreSection(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth().clickable { expanded = !expanded },
         ) {
+            Box(
+                modifier = Modifier
+                    .size(26.dp)
+                    .background(CestoColors.OrangeTint, RoundedCornerShape(8.dp)),
+                contentAlignment = Alignment.Center,
+            ) {
+                androidx.compose.foundation.Image(
+                    painter = painterResource(R.drawable.ic_store),
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                )
+            }
+            Spacer(Modifier.width(10.dp))
             Text(
                 storeWithItems.store.name,
                 style = MaterialTheme.typography.titleMedium,

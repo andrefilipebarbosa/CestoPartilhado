@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import pt.cestopartilhado.app.data.AuthRepository
 import pt.cestopartilhado.app.data.ListsRepository
@@ -23,9 +24,11 @@ class ArchivedViewModel(
         val uid = authRepository.currentUser?.uid
         if (uid != null) {
             viewModelScope.launch {
-                listsRepository.observeLists(uid, ShoppingList.STATUS_CLOSED).collect {
-                    _closedLists.value = it
-                }
+                listsRepository.observeLists(uid, ShoppingList.STATUS_CLOSED)
+                    // Ver comentário equivalente em HomeViewModel: evita crash se a
+                    // sessão terminar enquanto este ecrã ainda está a ouvir o Firestore.
+                    .catch { }
+                    .collect { _closedLists.value = it }
             }
         }
     }

@@ -1,7 +1,9 @@
 package pt.cestopartilhado.app.ui.invite
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,10 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Link
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -36,6 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pt.cestopartilhado.app.R
+import pt.cestopartilhado.app.ui.components.AvatarCircle
 import pt.cestopartilhado.app.ui.theme.CestoColors
 import pt.cestopartilhado.app.util.shareText
 
@@ -70,12 +77,41 @@ fun InviteScreen(viewModel: InviteViewModel, listId: String, onBack: () -> Unit)
                     modifier = Modifier.padding(bottom = 20.dp),
                 )
 
-                Button(
-                    onClick = { shareText(context, viewModel.inviteLink()) },
-                    colors = ButtonDefaults.buttonColors(containerColor = CestoColors.Green, contentColor = Color.White),
-                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(CestoColors.Surface2, RoundedCornerShape(16.dp))
+                        .padding(14.dp),
                 ) {
-                    Text(stringResource(R.string.invite_share_link), fontWeight = FontWeight.SemiBold)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 14.dp),
+                    ) {
+                        Box(
+                            modifier = Modifier.size(36.dp).background(CestoColors.Surface, CircleShape),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(Icons.Filled.Link, contentDescription = null, tint = CestoColors.Text2, modifier = Modifier.size(17.dp))
+                        }
+                        Spacer(Modifier.width(12.dp))
+                        Text(
+                            text = viewModel.inviteLink(),
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Medium,
+                            color = CestoColors.Text2,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                    Button(
+                        onClick = { shareText(context, viewModel.inviteLink()) },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = CestoColors.Green, contentColor = Color.White),
+                        modifier = Modifier.fillMaxWidth().height(46.dp),
+                    ) {
+                        Text(stringResource(R.string.invite_share_link), fontWeight = FontWeight.SemiBold)
+                    }
                 }
 
                 Spacer(Modifier.height(24.dp))
@@ -93,6 +129,7 @@ fun InviteScreen(viewModel: InviteViewModel, listId: String, onBack: () -> Unit)
                         Button(
                             onClick = { viewModel.invite(email); email = "" },
                             enabled = !isInviting && email.isNotBlank(),
+                            shape = RoundedCornerShape(12.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = CestoColors.Text, contentColor = Color.White),
                         ) {
                             Text(stringResource(R.string.invite_button))
@@ -129,21 +166,53 @@ fun InviteScreen(viewModel: InviteViewModel, listId: String, onBack: () -> Unit)
                     )
                     Column {
                         currentList.memberIds.forEach { uid ->
+                            val isSelf = uid == viewModel.currentUid
                             Row(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                             ) {
-                                Text(if (uid == currentList.ownerId) stringResource(R.string.invite_role_owner) else stringResource(R.string.invite_role_editor), color = CestoColors.Text)
+                                AvatarCircle(
+                                    label = if (isSelf) viewModel.displayName.ifBlank { "?" } else "?",
+                                    size = 40.dp,
+                                    background = if (uid == currentList.ownerId) CestoColors.Green else CestoColors.Orange,
+                                )
+                                Spacer(Modifier.width(12.dp))
+                                Text(
+                                    text = if (isSelf) "${viewModel.displayName} (tu)" else uid.take(8),
+                                    color = CestoColors.Text,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                Text(
+                                    if (uid == currentList.ownerId) stringResource(R.string.invite_role_owner) else stringResource(R.string.invite_role_editor),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = if (uid == currentList.ownerId) CestoColors.GreenDark else CestoColors.Text2,
+                                    modifier = Modifier
+                                        .background(if (uid == currentList.ownerId) CestoColors.GreenTint else CestoColors.Surface2, RoundedCornerShape(999.dp))
+                                        .padding(horizontal = 10.dp, vertical = 4.dp),
+                                )
                             }
                         }
                         currentList.pendingInvites.forEach { pendingEmail ->
                             Row(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                             ) {
-                                Text(pendingEmail, color = CestoColors.Text)
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .background(CestoColors.Surface2, CircleShape)
+                                        .border(1.dp, CestoColors.Text3, CircleShape),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Icon(Icons.Filled.MailOutline, contentDescription = null, tint = CestoColors.Text3, modifier = Modifier.size(16.dp))
+                                }
+                                Spacer(Modifier.width(12.dp))
+                                Text(pendingEmail, color = CestoColors.Text, modifier = Modifier.weight(1f))
                                 Text(
                                     stringResource(R.string.invite_role_pending),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.SemiBold,
                                     color = CestoColors.OrangeDark,
                                     modifier = Modifier
                                         .background(CestoColors.OrangeTint, RoundedCornerShape(999.dp))

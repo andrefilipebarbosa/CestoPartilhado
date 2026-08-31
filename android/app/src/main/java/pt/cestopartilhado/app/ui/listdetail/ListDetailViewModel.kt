@@ -23,6 +23,7 @@ class ListDetailViewModel(
 
     val currentUid: String? get() = authRepository.currentUser?.uid
     val isOwner: Boolean get() = _state.value?.list?.ownerId == currentUid
+    val displayName: String get() = authRepository.currentUserProfile()?.displayName ?: ""
 
     fun load(listId: String) {
         viewModelScope.launch {

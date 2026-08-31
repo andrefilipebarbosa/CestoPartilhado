@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import pt.cestopartilhado.app.R
 import pt.cestopartilhado.app.ui.theme.CestoColors
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NewListScreen(viewModel: NewListViewModel, onBack: () -> Unit, onCreated: (String) -> Unit) {
     val suggestions by viewModel.suggestions.collectAsState()
@@ -53,6 +55,7 @@ fun NewListScreen(viewModel: NewListViewModel, onBack: () -> Unit, onCreated: (S
                 Button(
                     onClick = { viewModel.createList(onCreated) },
                     enabled = !isCreating && viewModel.listName.isNotBlank(),
+                    shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = CestoColors.Green, contentColor = androidx.compose.ui.graphics.Color.White),
                     modifier = Modifier.fillMaxWidth().height(52.dp),
                 ) {
