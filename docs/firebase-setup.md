@@ -1,6 +1,15 @@
 # Configuração do Firebase
 
-Passos a fazer na tua conta antes de conseguires compilar e correr as apps.
+> **Estado atual:** o projeto `cesto-partilhado` já está criado e ligado às
+> duas apps (Android e iOS), com Authentication (Google) e Firestore
+> ativos e as regras/índices publicados — feito via Firebase CLI numa sessão
+> de trabalho anterior. `android/app/google-services.json` e
+> `ios/CestoPartilhado/GoogleService-Info.plist` já existem localmente (não
+> estão no Git, por serem específicos de cada máquina/checkout — ver nota no
+> fim). As Cloud Functions abaixo **ainda não foram publicadas** (exigem o
+> plano Blaze, que não foi ativado). O resto deste documento fica como
+> referência caso precises de recriar isto de raiz (projeto novo, máquina
+> nova, etc.).
 
 ## 1. Criar o projeto
 
@@ -88,5 +97,11 @@ pendentes a quem cria conta pela primeira vez).
   do Firestore (`firebase/firestore.rules`) e na Authentication. É seguro
   incluir estes ficheiros no binário da app; só não os publiques num
   repositório Git público sem necessidade.
-- Este projeto nunca foi ligado a um projeto Firebase real nem compilado com
-  as tuas credenciais — os passos acima não foram executados por mim.
+- `google-services.json` e `GoogleService-Info.plist` estão no `.gitignore`
+  de propósito — se clonares este repositório noutra máquina, repete os
+  passos 5/6 (ou copia os ficheiros de uma máquina onde já existam) antes de
+  compilar.
+- Antes de publicares nas lojas, ainda faltam: SHA-1 de **release** no
+  Android (passo 5.3), plano Blaze + `firebase deploy --only functions` para
+  ativar os convites por email e a limpeza automática aos 30 dias, e rever
+  os documentos em `legal/`.

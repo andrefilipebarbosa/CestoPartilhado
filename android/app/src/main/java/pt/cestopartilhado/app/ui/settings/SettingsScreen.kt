@@ -1,5 +1,6 @@
 package pt.cestopartilhado.app.ui.settings
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -54,9 +55,9 @@ fun SettingsScreen(
 
             Text(stringResource(R.string.settings_language), style = MaterialTheme.typography.titleMedium, color = CestoColors.Text, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(8.dp))
-            LanguageOption(LocaleManager.LANGUAGE_SYSTEM, stringResource(R.string.settings_language_system), viewModel)
-            LanguageOption(LocaleManager.LANGUAGE_PT, stringResource(R.string.settings_language_pt), viewModel)
-            LanguageOption(LocaleManager.LANGUAGE_EN, stringResource(R.string.settings_language_en), viewModel)
+            LanguageOption(LocaleManager.LANGUAGE_SYSTEM, stringResource(R.string.settings_language_system), viewModel, context)
+            LanguageOption(LocaleManager.LANGUAGE_PT, stringResource(R.string.settings_language_pt), viewModel, context)
+            LanguageOption(LocaleManager.LANGUAGE_EN, stringResource(R.string.settings_language_en), viewModel, context)
 
             Spacer(Modifier.height(28.dp))
             Text(stringResource(R.string.settings_export_title), style = MaterialTheme.typography.titleMedium, color = CestoColors.Text, fontWeight = FontWeight.SemiBold)
@@ -91,16 +92,20 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun LanguageOption(value: String, label: String, viewModel: SettingsViewModel) {
-    val selected = viewModel.currentLanguage == value
+private fun LanguageOption(value: String, label: String, viewModel: SettingsViewModel, context: android.content.Context) {
+    val selected = viewModel.currentLanguage(context) == value
+    val onSelect: () -> Unit = {
+        viewModel.setLanguage(context, value)
+        if (context is Activity) context.recreate()
+    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .selectable(selected = selected, onClick = { viewModel.setLanguage(value) })
+            .selectable(selected = selected, onClick = onSelect)
             .padding(vertical = 6.dp),
     ) {
-        RadioButton(selected = selected, onClick = { viewModel.setLanguage(value) })
+        RadioButton(selected = selected, onClick = onSelect)
         Text(label, color = CestoColors.Text)
     }
 }

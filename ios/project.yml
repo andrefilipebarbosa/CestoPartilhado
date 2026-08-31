@@ -21,6 +21,7 @@ targets:
     resources:
       - path: CestoPartilhado/Resources
       - path: CestoPartilhado/Assets.xcassets
+      - path: CestoPartilhado/GoogleService-Info.plist
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: pt.cestopartilhado.app
@@ -32,16 +33,16 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
-        # CFBundleURLTypes (esquema de convite) é injetado via info.plist customizado abaixo.
+        # CFBundleURLTypes: esquema do link de convite + REVERSED_CLIENT_ID do
+        # GoogleService-Info.plist (exigido pelo GoogleSignIn para o callback OAuth).
     info:
       path: CestoPartilhado/Info.plist
       properties:
         CFBundleURLTypes:
           - CFBundleURLSchemes:
               - cestopartilhado
-        # Adiciona aqui também o REVERSED_CLIENT_ID do teu GoogleService-Info.plist
-        # como um segundo CFBundleURLSchemes, depois de o Firebase to gerar — ver
-        # docs/firebase-setup.md.
+          - CFBundleURLSchemes:
+              - com.googleusercontent.apps.90825558111-ugv4l8ekca5v0iuebpsgiuull3cqcl7i
     dependencies:
       - package: Firebase
         product: FirebaseAuth

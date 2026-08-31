@@ -24,6 +24,12 @@
 				<string>cestopartilhado</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.90825558111-ugv4l8ekca5v0iuebpsgiuull3cqcl7i</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>

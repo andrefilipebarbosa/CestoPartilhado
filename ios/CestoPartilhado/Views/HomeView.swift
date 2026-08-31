@@ -25,12 +25,27 @@ struct HomeView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text(String(format: L("home_greeting"), auth.displayName))
-                    .font(.title2).bold()
-                    .foregroundColor(.sslText)
-                Text(L("home_title"))
-                    .font(.headline)
-                    .foregroundColor(.sslText2)
+                HStack {
+                    Text(String(format: L("home_greeting"), auth.displayName))
+                        .font(.title2).bold()
+                        .foregroundColor(.sslText)
+                    Spacer()
+                    AvatarCircle(label: auth.displayName.isEmpty ? "?" : auth.displayName, size: 44)
+                }
+
+                HStack {
+                    Text(L("home_title"))
+                        .font(.title3.weight(.semibold))
+                        .foregroundColor(.sslText)
+                    Spacer()
+                    if !viewModel.lists.isEmpty {
+                        Text(String(format: L("home_active_count"), viewModel.lists.count))
+                            .font(.caption.weight(.semibold))
+                            .foregroundColor(.sslText2)
+                            .padding(.horizontal, 10).padding(.vertical, 4)
+                            .background(Capsule().fill(Color.sslSurface2))
+                    }
+                }
 
                 if viewModel.lists.isEmpty {
                     Text(L("home_empty"))
@@ -39,7 +54,7 @@ struct HomeView: View {
                 } else {
                     ForEach(viewModel.lists) { list in
                         NavigationLink(value: list.id ?? "") {
-                            ListCardView(list: list)
+                            ListCardView(list: list, selfLabel: auth.displayName)
                         }
                         .buttonStyle(.plain)
                     }
@@ -69,13 +84,41 @@ struct HomeView: View {
 
 private struct ListCardView: View {
     let list: ShoppingList
+    let selfLabel: String
+
+    private var progress: Double {
+        list.itemCount > 0 ? Double(list.boughtCount) / Double(list.itemCount) : 0
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 10) {
             Text(list.name).font(.headline).foregroundColor(.sslText)
-            Text("\(String(format: L("home_stores_count"), list.storeCount))  ·  \(String(format: L("home_items_progress"), list.boughtCount, list.itemCount))")
-                .font(.footnote)
-                .foregroundColor(.sslText3)
+
+            HStack {
+                MemberAvatarStack(selfLabel: selfLabel.isEmpty ? "?" : selfLabel, extraMembers: max(0, list.memberIds.count - 1))
+                Spacer()
+                Text(String(format: L("home_stores_count"), list.storeCount))
+                    .font(.caption.weight(.semibold))
+                    .foregroundColor(.sslOrangeDark)
+                    .padding(.horizontal, 10).padding(.vertical, 4)
+                    .background(Capsule().fill(Color.sslOrangeTint))
+            }
+
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Color.sslSurface2).frame(height: 6)
+                    Capsule().fill(Color.sslGreen).frame(width: geo.size.width * progress, height: 6)
+                }
+            }
+            .frame(height: 6)
+
+            HStack {
+                Text(String(format: L("home_items_progress"), list.boughtCount, list.itemCount))
+                    .font(.footnote).foregroundColor(.sslText2)
+                Spacer()
+                Text(relativeTimeText(list.updatedAt?.dateValue()))
+                    .font(.caption2).foregroundColor(.sslText3)
+            }
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)

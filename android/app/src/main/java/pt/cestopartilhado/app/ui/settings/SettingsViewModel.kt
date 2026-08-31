@@ -1,5 +1,6 @@
 package pt.cestopartilhado.app.ui.settings
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,10 +17,11 @@ class SettingsViewModel(
     private val _isExporting = MutableStateFlow(false)
     val isExporting: StateFlow<Boolean> = _isExporting
 
-    val currentLanguage: String get() = LocaleManager.currentLanguage()
     val accountEmail: String get() = authRepository.currentUserProfile()?.email ?: ""
 
-    fun setLanguage(language: String) = LocaleManager.applyLanguage(language)
+    fun currentLanguage(context: Context): String = LocaleManager.currentSetting(context)
+
+    fun setLanguage(context: Context, language: String) = LocaleManager.setLanguage(context, language)
 
     fun exportData(onReady: (String) -> Unit) {
         val uid = authRepository.currentUser?.uid ?: return

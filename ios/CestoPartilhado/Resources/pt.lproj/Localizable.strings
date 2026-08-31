@@ -20,9 +20,14 @@
 
 "home_title" = "As tuas listas";
 "home_greeting" = "Olá, %@";
+"home_active_count" = "%d ativas";
 "home_stores_count" = "%d lojas";
 "home_items_progress" = "%d/%d comprados";
 "home_empty" = "Ainda não tens listas. Toca em + para criar a primeira.";
+"time_just_now" = "Atualizada agora mesmo";
+"time_hours_ago" = "Atualizada há %dh";
+"time_yesterday" = "Atualizada ontem";
+"time_days_ago" = "Atualizada há %d dias";
 "nav_lists" = "Listas";
 "nav_archive" = "Arquivo";
 "nav_settings" = "Definições";

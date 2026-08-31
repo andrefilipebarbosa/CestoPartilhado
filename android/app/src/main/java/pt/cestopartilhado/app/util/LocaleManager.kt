@@ -1,31 +1,47 @@
 package pt.cestopartilhado.app.util
 
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
+import android.content.Context
+import android.content.res.Configuration
+import java.util.Locale
 
 /**
  * Por omissão a app segue o idioma do telefone automaticamente (é o comportamento
  * normal dos recursos do Android: values/ = inglês, values-pt/ = português — nada a
- * fazer aqui para isso). Esta classe só trata da escolha manual nas Definições, que
- * substitui esse comportamento automático enquanto estiver definida.
+ * fazer aqui para isso). Esta classe trata da escolha manual nas Definições.
+ *
+ * Nota: tentámos primeiro `AppCompatDelegate.setApplicationLocales()` (a API
+ * "per-app language" recomendada), mas falhava silenciosamente nesta app —
+ * confirmado com logging (`getApplicationLocales()` continuava vazio depois de
+ * chamar `setApplicationLocales()`). Por isso usamos a abordagem clássica e
+ * garantida de embrulhar o Context da Activity com a Configuration certa.
  */
 object LocaleManager {
     const val LANGUAGE_SYSTEM = "system"
     const val LANGUAGE_PT = "pt"
     const val LANGUAGE_EN = "en"
 
-    fun applyLanguage(language: String) {
-        val locales = if (language == LANGUAGE_SYSTEM) {
-            LocaleListCompat.getEmptyLocaleList()
-        } else {
-            LocaleListCompat.forLanguageTags(language)
-        }
-        AppCompatDelegate.setApplicationLocales(locales)
+    private const val PREFS_NAME = "cesto_prefs"
+    private const val KEY_LANGUAGE = "language"
+
+    fun currentSetting(context: Context): String =
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_LANGUAGE, LANGUAGE_SYSTEM) ?: LANGUAGE_SYSTEM
+
+    fun setLanguage(context: Context, language: String) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_LANGUAGE, language)
+            .apply()
     }
 
-    fun currentLanguage(): String {
-        val locales = AppCompatDelegate.getApplicationLocales()
-        if (locales.isEmpty) return LANGUAGE_SYSTEM
-        return locales[0]?.language ?: LANGUAGE_SYSTEM
+    /** Aplica o idioma guardado a um Context — chamar em `attachBaseContext`. */
+    fun wrap(context: Context): Context {
+        val language = currentSetting(context)
+        if (language == LANGUAGE_SYSTEM) return context
+        val locale = Locale(language)
+        Locale.setDefault(locale)
+        val config = Configuration(context.resources.configuration)
+        config.setLocale(locale)
+        return context.createConfigurationContext(config)
     }
 }

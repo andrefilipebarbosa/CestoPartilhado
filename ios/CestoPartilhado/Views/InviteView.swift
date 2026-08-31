@@ -12,6 +12,7 @@ final class InviteViewModel: ObservableObject {
     private var currentUid: String?
 
     var isOwner: Bool { list?.ownerId == currentUid }
+    var uid: String? { currentUid }
 
     func start(listId: String, uid: String) {
         currentUid = uid
@@ -50,13 +51,28 @@ struct InviteView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Text(L("invite_subtitle")).font(.subheadline).foregroundColor(.sslText3)
 
-                Button {
-                    let activity = UIActivityViewController(activityItems: [viewModel.inviteLink()], applicationActivities: nil)
-                    UIApplication.shared.topMostViewController()?.present(activity, animated: true)
-                } label: {
-                    Text(L("invite_share_link")).fontWeight(.semibold).frame(maxWidth: .infinity).frame(height: 48)
+                VStack(spacing: 14) {
+                    HStack(spacing: 12) {
+                        Circle().fill(Color.sslSurface).frame(width: 36, height: 36)
+                            .overlay(Image(systemName: "link").font(.system(size: 15)).foregroundColor(.sslText2))
+                        Text(viewModel.inviteLink())
+                            .font(.footnote.weight(.medium))
+                            .foregroundColor(.sslText2)
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    Button {
+                        let activity = UIActivityViewController(activityItems: [viewModel.inviteLink()], applicationActivities: nil)
+                        UIApplication.shared.topMostViewController()?.present(activity, animated: true)
+                    } label: {
+                        Text(L("invite_share_link")).fontWeight(.semibold).frame(maxWidth: .infinity).frame(height: 46)
+                    }
+                    .buttonStyle(.borderedProminent).tint(.sslGreen)
                 }
-                .buttonStyle(.borderedProminent).tint(.sslGreen)
+                .padding(14)
+                .background(Color.sslSurface2)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
 
                 if viewModel.isOwner {
                     HStack {
@@ -86,19 +102,37 @@ struct InviteView: View {
                     Text(String(format: L("invite_people_with_access"), list.memberIds.count))
                         .font(.headline).foregroundColor(.sslText2).padding(.top, 12)
 
-                    ForEach(list.memberIds, id: \.self) { uid in
-                        Text(uid == list.ownerId ? L("invite_role_owner") : L("invite_role_editor"))
-                            .foregroundColor(.sslText)
+                    ForEach(list.memberIds, id: \.self) { memberUid in
+                        let isSelf = memberUid == viewModel.uid
+                        HStack(spacing: 12) {
+                            AvatarCircle(
+                                label: isSelf ? (auth.displayName.isEmpty ? "?" : auth.displayName) : "?",
+                                size: 40,
+                                background: memberUid == list.ownerId ? .sslGreen : .sslOrange
+                            )
+                            Text(isSelf ? "\(auth.displayName) (tu)" : String(memberUid.prefix(8)))
+                                .foregroundColor(.sslText)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                            Text(memberUid == list.ownerId ? L("invite_role_owner") : L("invite_role_editor"))
+                                .font(.caption.weight(.semibold))
+                                .foregroundColor(memberUid == list.ownerId ? .sslGreenDark : .sslText2)
+                                .padding(.horizontal, 10).padding(.vertical, 4)
+                                .background(Capsule().fill(memberUid == list.ownerId ? Color.sslGreenTint : Color.sslSurface2))
+                        }
+                        .padding(.vertical, 4)
                     }
                     ForEach(list.pendingInvites, id: \.self) { pendingEmail in
-                        HStack {
-                            Text(pendingEmail).foregroundColor(.sslText)
-                            Spacer()
+                        HStack(spacing: 12) {
+                            Circle().fill(Color.sslSurface2).frame(width: 40, height: 40)
+                                .overlay(Circle().stroke(Color.sslText3, lineWidth: 1))
+                                .overlay(Image(systemName: "envelope").font(.system(size: 14)).foregroundColor(.sslText3))
+                            Text(pendingEmail).foregroundColor(.sslText).frame(maxWidth: .infinity, alignment: .leading)
                             Text(L("invite_role_pending"))
-                                .font(.caption).foregroundColor(.sslOrangeDark)
+                                .font(.caption.weight(.semibold)).foregroundColor(.sslOrangeDark)
                                 .padding(.horizontal, 10).padding(.vertical, 4)
                                 .background(Capsule().fill(Color.sslOrangeTint))
                         }
+                        .padding(.vertical, 4)
                     }
                 }
             }

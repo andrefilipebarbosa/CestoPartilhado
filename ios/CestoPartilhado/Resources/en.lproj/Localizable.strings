@@ -20,9 +20,14 @@
 
 "home_title" = "Your lists";
 "home_greeting" = "Hello, %@";
+"home_active_count" = "%d active";
 "home_stores_count" = "%d stores";
 "home_items_progress" = "%d/%d purchased";
 "home_empty" = "You don't have any lists yet. Tap + to create your first one.";
+"time_just_now" = "Updated just now";
+"time_hours_ago" = "Updated %dh ago";
+"time_yesterday" = "Updated yesterday";
+"time_days_ago" = "Updated %d days ago";
 "nav_lists" = "Lists";
 "nav_archive" = "Archive";
 "nav_settings" = "Settings";

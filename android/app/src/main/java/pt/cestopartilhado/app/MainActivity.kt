@@ -1,5 +1,6 @@
 package pt.cestopartilhado.app
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,6 +28,7 @@ import pt.cestopartilhado.app.ui.newlist.NewListViewModel
 import pt.cestopartilhado.app.ui.settings.SettingsScreen
 import pt.cestopartilhado.app.ui.settings.SettingsViewModel
 import pt.cestopartilhado.app.ui.theme.CestoPartilhadoTheme
+import pt.cestopartilhado.app.util.LocaleManager
 
 private object Routes {
     const val LOGIN = "login"
@@ -44,6 +46,10 @@ private object Routes {
 }
 
 class MainActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleManager.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val container = (application as CestoApplication).container

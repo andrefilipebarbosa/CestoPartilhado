@@ -99,8 +99,25 @@ struct ListDetailView: View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
-                    Text("\(String(format: L("list_detail_stores_count"), state.stores.count))  ·  \(String(format: L("home_items_progress"), state.boughtItems, state.totalItems))")
-                        .font(.footnote).foregroundColor(.sslText2)
+                    VStack(spacing: 8) {
+                        HStack {
+                            MemberAvatarStack(
+                                selfLabel: auth.displayName.isEmpty ? "?" : auth.displayName,
+                                extraMembers: max(0, state.list.memberIds.count - 1)
+                            )
+                            Spacer()
+                            Text("\(String(format: L("list_detail_stores_count"), state.stores.count))  ·  \(String(format: L("home_items_progress"), state.boughtItems, state.totalItems))")
+                                .font(.footnote).foregroundColor(.sslText2)
+                        }
+                        GeometryReader { geo in
+                            let progress = state.totalItems > 0 ? Double(state.boughtItems) / Double(state.totalItems) : 0
+                            ZStack(alignment: .leading) {
+                                Capsule().fill(Color.sslSurface2).frame(height: 6)
+                                Capsule().fill(Color.sslGreen).frame(width: geo.size.width * progress, height: 6)
+                            }
+                        }
+                        .frame(height: 6)
+                    }
 
                     if addingStore {
                         HStack {
@@ -185,6 +202,10 @@ private struct StoreSectionView: View {
                 expanded.toggle()
             } label: {
                 HStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.sslOrangeTint)
+                        .frame(width: 26, height: 26)
+                        .overlay(Image(systemName: "bag").font(.system(size: 12)).foregroundColor(.sslOrangeDark))
                     Text(storeWithItems.store.name).font(.headline).foregroundColor(.sslText)
                     Spacer()
                     Text("\(storeWithItems.boughtCount)/\(storeWithItems.items.count)").font(.footnote).foregroundColor(.sslText3)

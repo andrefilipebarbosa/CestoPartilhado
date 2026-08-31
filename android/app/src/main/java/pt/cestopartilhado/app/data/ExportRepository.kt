@@ -7,6 +7,7 @@ import pt.cestopartilhado.app.R
 import pt.cestopartilhado.app.model.ShoppingItem
 import pt.cestopartilhado.app.model.ShoppingList
 import pt.cestopartilhado.app.model.Store
+import pt.cestopartilhado.app.util.LocaleManager
 import java.text.DateFormat
 import java.util.Date
 
@@ -16,9 +17,13 @@ import java.util.Date
  * "Exportar os meus dados" nas Definições.
  */
 class ExportRepository(
-    private val context: Context,
+    private val appContext: Context,
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
 ) {
+    // Reembrulhado a cada exportação (não só no arranque da app) para respeitar
+    // uma troca de idioma feita a meio da sessão, sem precisar de reiniciar a app.
+    private val context: Context get() = LocaleManager.wrap(appContext)
+
     suspend fun buildExportText(uid: String, accountEmail: String): String {
         val activeLists = fetchLists(uid, ShoppingList.STATUS_ACTIVE)
         val closedLists = fetchLists(uid, ShoppingList.STATUS_CLOSED)
