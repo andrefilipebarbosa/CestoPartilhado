@@ -29,16 +29,19 @@ struct LoginView: View {
                     Text(L("app_name"))
                         .font(.title3.bold())
                         .foregroundColor(.sslText)
+                        .accessibilityIdentifier("loginAppNameText")
                 }
                 .padding(.bottom, 14)
 
                 Text(L("login_welcome"))
                     .font(.title2.weight(.semibold))
                     .foregroundColor(.sslText)
+                    .accessibilityIdentifier("loginWelcomeText")
                 Text(L("login_subtitle"))
                     .font(.subheadline)
                     .foregroundColor(.sslText2)
                     .padding(.bottom, 20)
+                    .accessibilityIdentifier("loginSubtitleText")
 
                 Button {
                     Task {
@@ -63,6 +66,7 @@ struct LoginView: View {
                 }
                 .buttonStyle(.plain)
                 .disabled(isSigningIn)
+                .accessibilityIdentifier("loginContinueWithGoogleButton")
 
                 SignInWithAppleButton(.signIn) { request in
                     let nonce = AuthService.randomNonceString()
@@ -93,6 +97,7 @@ struct LoginView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .disabled(isSigningIn)
                 .padding(.top, 12)
+                .accessibilityIdentifier("loginSignInWithAppleButton")
 
                 if let errorMessage {
                     Text(errorMessage).foregroundColor(.sslOrangeDark).font(.footnote)

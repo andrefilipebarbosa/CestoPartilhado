@@ -49,6 +49,7 @@ struct SettingsView: View {
                     } label: {
                         Text(L("settings_sign_out"))
                     }
+                    .accessibilityIdentifier("settingsSignOutButton")
                 }
             }
             .navigationTitle(L("settings_title"))

@@ -64,3 +64,32 @@ targets:
         product: FirebaseMessaging
       - package: GoogleSignIn
         product: GoogleSignIn
+
+  CestoPartilhadoUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: CestoPartilhadoUITests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.cestopartilhado.uitests
+        DEVELOPMENT_TEAM: 6L2V6Z5JJP
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "5.9"
+        TARGETED_DEVICE_FAMILY: "1"
+    dependencies:
+      - target: CestoPartilhado
+
+schemes:
+  CestoPartilhado:
+    build:
+      targets:
+        CestoPartilhado: all
+        CestoPartilhadoUITests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - CestoPartilhadoUITests

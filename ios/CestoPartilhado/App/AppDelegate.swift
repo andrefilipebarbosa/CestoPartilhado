@@ -17,6 +17,13 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         if let clientID = FirebaseApp.app()?.options.clientID {
             GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
         }
+
+        // Hook só para os testes de UI: força o arranque sem sessão, para o
+        // ecrã de login ser determinístico (ver CestoPartilhadoUITests). Tem de
+        // correr depois de FirebaseApp.configure() — Auth.auth() rebenta antes disso.
+        if ProcessInfo.processInfo.arguments.contains("-uiTestSignedOut") {
+            try? Auth.auth().signOut()
+        }
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
         application.registerForRemoteNotifications()

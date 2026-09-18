@@ -62,6 +62,7 @@ struct HomeView: View {
                     Button(L("home_new_list")) { showingNewList = true }
                         .font(.caption.weight(.semibold))
                         .foregroundColor(.sslGreenDark)
+                        .accessibilityIdentifier("homeNewListLinkButton")
                 }
 
                 if viewModel.lists.isEmpty {
@@ -111,10 +112,13 @@ struct HomeView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
                     Button(L("new_list_title")) { showingNewList = true }
+                        .accessibilityIdentifier("homeMenuNewListItem")
                     Button(L("split_new_title")) { showingNewSplitList = true }
+                        .accessibilityIdentifier("homeMenuNewSplitListItem")
                 } label: {
                     Image(systemName: "plus.circle.fill").foregroundColor(.sslGreen)
                 }
+                .accessibilityIdentifier("homeCreateMenuButton")
             }
         }
         .sheet(isPresented: $showingNewList) {
