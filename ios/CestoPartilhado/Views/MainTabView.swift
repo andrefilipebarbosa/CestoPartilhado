@@ -5,13 +5,10 @@ struct MainTabView: View {
         TabView {
             HomeNavigationView()
                 .tabItem { Label(L("nav_lists"), systemImage: "house.fill") }
-                .accessibilityIdentifier("tabLists")
             ArchivedView()
                 .tabItem { Label(L("nav_archive"), systemImage: "archivebox.fill") }
-                .accessibilityIdentifier("tabArchive")
             SettingsView()
                 .tabItem { Label(L("nav_settings"), systemImage: "gearshape.fill") }
-                .accessibilityIdentifier("tabSettings")
         }
         .tint(.sslGreen)
     }

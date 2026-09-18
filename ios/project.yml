@@ -18,6 +18,17 @@ targets:
     platform: iOS
     sources:
       - path: CestoPartilhado
+        excludes:
+          - "Legal/**"
+      # Referência de pasta (não group) — preserva "Legal/" dentro do bundle,
+      # que é o que LegalDocView.swift espera ao procurar com subdirectory: "Legal".
+      # `type: folder` só funciona debaixo de `sources`, não de `resources`
+      # (testado — lá é ignorado silenciosamente); sem isto o xcodegen achata os
+      # .md para a raiz do bundle e os Termos de Serviço / Política de
+      # Privacidade ficam sempre em branco.
+      - path: CestoPartilhado/Legal
+        type: folder
+        buildPhase: resources
     resources:
       - path: CestoPartilhado/Resources
       - path: CestoPartilhado/Assets.xcassets
