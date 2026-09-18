@@ -1,6 +1,5 @@
 import AuthenticationServices
 import CryptoKit
-import FacebookLogin
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
@@ -44,29 +43,6 @@ final class AuthService: ObservableObject {
             throw NSError(domain: "AuthService", code: 2, userInfo: [NSLocalizedDescriptionKey: "Missing Google ID token"])
         }
         let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: result.user.accessToken.tokenString)
-        let authResult = try await Auth.auth().signIn(with: credential)
-        try await finishSignIn(authResult)
-    }
-
-    func signInWithFacebook() async throws {
-        guard let rootViewController = Self.topViewController() else {
-            throw NSError(domain: "AuthService", code: 1, userInfo: [NSLocalizedDescriptionKey: "No root view controller"])
-        }
-        let loginResult = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<LoginManagerLoginResult, Error>) in
-            LoginManager().logIn(permissions: ["email", "public_profile"], from: rootViewController) { result, error in
-                if let error {
-                    continuation.resume(throwing: error)
-                } else if let result, !result.isCancelled {
-                    continuation.resume(returning: result)
-                } else {
-                    continuation.resume(throwing: NSError(domain: "AuthService", code: 4, userInfo: [NSLocalizedDescriptionKey: "Login cancelado"]))
-                }
-            }
-        }
-        guard let accessToken = loginResult.token else {
-            throw NSError(domain: "AuthService", code: 5, userInfo: [NSLocalizedDescriptionKey: "Missing Facebook access token"])
-        }
-        let credential = FacebookAuthProvider.credential(withAccessToken: accessToken.tokenString)
         let authResult = try await Auth.auth().signIn(with: credential)
         try await finishSignIn(authResult)
     }
@@ -120,7 +96,6 @@ final class AuthService: ObservableObject {
 
     func signOut() throws {
         GIDSignIn.sharedInstance.signOut()
-        LoginManager().logOut()
         try Auth.auth().signOut()
     }
 

@@ -1,6 +1,5 @@
 package pt.cestopartilhado.app.ui.login
 
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -25,23 +24,15 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
-import com.facebook.login.LoginManager
-import com.facebook.login.LoginResult
 import pt.cestopartilhado.app.R
 import pt.cestopartilhado.app.ui.theme.CestoColors
 
@@ -53,22 +44,6 @@ fun LoginScreen(viewModel: LoginViewModel, onSignedIn: () -> Unit) {
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result -> viewModel.onSignInResult(result.data, onSignedIn) }
-
-    val activity = LocalContext.current as ComponentActivity
-    val facebookCallbackManager = remember { CallbackManager.Factory.create() }
-    DisposableEffect(facebookCallbackManager) {
-        val callback = object : FacebookCallback<LoginResult> {
-            override fun onSuccess(result: LoginResult) {
-                viewModel.onFacebookLoginResult(result.accessToken.token, onSignedIn)
-            }
-            override fun onCancel() {}
-            override fun onError(error: FacebookException) {
-                viewModel.onFacebookLoginError(error.message)
-            }
-        }
-        LoginManager.getInstance().registerCallback(facebookCallbackManager, callback)
-        onDispose { LoginManager.getInstance().unregisterCallback(facebookCallbackManager) }
-    }
 
     Column(modifier = Modifier.fillMaxSize().background(CestoColors.Bg)) {
 
@@ -145,30 +120,6 @@ fun LoginScreen(viewModel: LoginViewModel, onSignedIn: () -> Unit) {
                     )
                     Spacer(Modifier.width(12.dp))
                     Text(stringResource(R.string.action_sign_in_google), fontWeight = FontWeight.SemiBold)
-                }
-            }
-
-            Spacer(Modifier.height(12.dp))
-
-            Button(
-                onClick = {
-                    LoginManager.getInstance()
-                        .logIn(activity, facebookCallbackManager, listOf("email", "public_profile"))
-                },
-                enabled = !isSigningIn,
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = CestoColors.Surface, contentColor = CestoColors.Text),
-                border = BorderStroke(1.dp, CestoColors.Border),
-                modifier = Modifier.fillMaxWidth().height(52.dp),
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    androidx.compose.foundation.Image(
-                        painter = painterResource(R.drawable.ic_facebook_logo),
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                    )
-                    Spacer(Modifier.width(12.dp))
-                    Text(stringResource(R.string.action_sign_in_facebook), fontWeight = FontWeight.SemiBold)
                 }
             }
 

@@ -89,70 +89,11 @@ pendentes a quem cria conta pela primeira vez).
    Na primeira abertura o Xcode vai resolver os pacotes Swift (Firebase,
    GoogleSignIn) — precisa de ligação à internet nesse momento.
 
-## 7. Login com Facebook e Apple
+## 7. Login com Apple (só iOS)
 
-O código das duas apps já suporta três formas de login — Google, Facebook e
-(só em iOS) "Sign in with Apple" — mas o Facebook e a Apple usam
-**valores de exemplo** (`000000000000000` / `REPLACE_WITH_CLIENT_TOKEN`) até
-seguires os passos abaixo. Sem isso, os botões aparecem mas o login com
-Facebook falha sempre com `errorCode: 190 ... Invalid application ID`
-(confirmado em teste — não crasha, só não autentica).
-
-### 7.1 Criar a app no Facebook for Developers
-
-1. Vai a [developers.facebook.com/apps](https://developers.facebook.com/apps) →
-   "Criar app" → tipo "Consumidor" (ou "Nenhum" se não aparecer essa opção) →
-   nome "Cesto Partilhado".
-2. No painel da app, adiciona o produto **Facebook Login**.
-3. Em Definições → Básico, anota:
-   - **ID da app** (App ID) — um número, ex. `1234567890123456`.
-   - **Chave do cliente** (Client Token) — em "Mostrar" ao lado do App Secret,
-     ou em Definições → Avançado → Segurança → Client Token.
-4. Em Facebook Login → Definições, ativa "Client OAuth Login" e "Web OAuth
-   Login", e adiciona o URI de redirecionamento que a Firebase te dá no passo
-   7.3 (aparece só depois de ativares o fornecedor Facebook na consola).
-5. Enquanto a app estiver em modo "Em desenvolvimento", só as contas listadas
-   em Funções → Testadores/Programadores conseguem fazer login — adiciona a
-   tua conta de teste aí, ou muda a app para "Ativo" (requer preencher
-   política de privacidade e outros dados de revisão) antes de testares com
-   outras contas.
-
-### 7.2 Substituir os valores placeholder no código
-
-**Android** — `android/app/src/main/res/values/strings.xml`:
-```xml
-<string name="facebook_app_id" translatable="false">SEU_APP_ID</string>
-<string name="fb_login_protocol_scheme" translatable="false">fbSEU_APP_ID</string>
-<string name="facebook_client_token" translatable="false">SEU_CLIENT_TOKEN</string>
-```
-
-**iOS** — `ios/project.yml`, dentro de `info.properties`:
-```yaml
-FacebookAppID: "SEU_APP_ID"
-FacebookClientToken: "SEU_CLIENT_TOKEN"
-```
-e no terceiro esquema de `CFBundleURLTypes` (o que hoje diz
-`fb000000000000000`), muda para `fbSEU_APP_ID`. Depois de editar, volta a
-gerar o projeto:
-```bash
-cd ios
-xcodegen generate
-```
-
-### 7.3 Ativar o fornecedor Facebook na Firebase
-
-Authentication → Sign-in method → Facebook → ativa → cola o **App ID** e o
-**App Secret** (não é o Client Token — o App Secret está em Definições →
-Básico → "Mostrar", ao lado do App ID). A Firebase mostra aí um "URI de
-redirecionamento OAuth" (algo como
-`https://cesto-partilhado.firebaseapp.com/__/auth/handler`) — copia-o para
-Facebook Login → Definições → "URIs de redirecionamento OAuth válidos"
-(passo 7.1.4).
-
-### 7.4 Ativar "Sign in with Apple" (só iOS)
-
-Não precisas de nenhuma app no Facebook nem de Services ID/chave — como o
-código usa o fluxo nativo do iOS, basta:
+O código das duas apps suporta login com Google; em iOS há também "Sign in
+with Apple" nativo. Não precisas de nenhuma app externa nem de Services
+ID/chave — basta:
 
 1. [developer.apple.com](https://developer.apple.com/account) → Certificates,
    Identifiers & Profiles → Identifiers → escolhe o App ID

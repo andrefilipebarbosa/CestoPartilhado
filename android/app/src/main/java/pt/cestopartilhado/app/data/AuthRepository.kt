@@ -2,11 +2,9 @@ package pt.cestopartilhado.app.data
 
 import android.content.Context
 import android.content.Intent
-import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
@@ -21,15 +19,13 @@ import kotlinx.coroutines.tasks.await
 import pt.cestopartilhado.app.model.UserProfile
 
 /**
- * Autenticação via Firebase Auth — Google, Facebook ou Apple (esta última pelo
- * fluxo OAuth genérico do Firebase, já que a Apple não tem SDK nativo para Android).
+ * Autenticação via Firebase Auth — Google.
  *
- * O Google precisa do "Web client ID" (o do tipo "3" no google-services.json / o
+ * Precisa do "Web client ID" (o do tipo "3" no google-services.json / o
  * client OAuth "Web application" criado automaticamente pela Firebase) para o pedido
  * de idToken — usa-se aqui a string de recursos gerada automaticamente pelo plugin
  * google-services (default_web_client_id), por isso não há nada a configurar à mão
- * neste ficheiro. O Facebook precisa de `facebook_app_id`/`facebook_client_token` em
- * res/values/strings.xml (ver docs/firebase-setup.md).
+ * neste ficheiro.
  */
 class AuthRepository(
     private val context: Context,
@@ -63,11 +59,6 @@ class AuthRepository(
         finishSignIn(credential)
     }
 
-    /** `accessToken` vem do `LoginManager`/`CallbackManager` do SDK do Facebook (ver LoginScreen.kt). */
-    suspend fun handleFacebookSignInResult(accessToken: String): Result<FirebaseUser> = runCatching {
-        finishSignIn(FacebookAuthProvider.getCredential(accessToken))
-    }
-
     private suspend fun finishSignIn(credential: com.google.firebase.auth.AuthCredential): FirebaseUser {
         val user = auth.signInWithCredential(credential).await().user
             ?: error("Sign-in sem utilizador devolvido")
@@ -96,7 +87,6 @@ class AuthRepository(
     suspend fun signOut() {
         auth.signOut()
         googleSignInClient.signOut().await()
-        LoginManager.getInstance().logOut()
     }
 
     private suspend fun upsertUserProfile(user: FirebaseUser) {

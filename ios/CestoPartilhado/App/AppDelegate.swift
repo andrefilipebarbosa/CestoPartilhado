@@ -3,7 +3,6 @@ import FirebaseAuth
 import FirebaseCore
 import FirebaseFirestore
 import FirebaseMessaging
-import FacebookCore
 import GoogleSignIn
 import UserNotifications
 
@@ -18,19 +17,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         if let clientID = FirebaseApp.app()?.options.clientID {
             GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
         }
-        ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
         application.registerForRemoteNotifications()
         return true
-    }
-
-    func application(
-        _ app: UIApplication,
-        open url: URL,
-        options: [UIApplication.OpenURLOptionsKey: Any] = [:]
-    ) -> Bool {
-        ApplicationDelegate.shared.application(app, open: url, options: options)
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {

@@ -64,31 +64,6 @@ struct LoginView: View {
                 .buttonStyle(.plain)
                 .disabled(isSigningIn)
 
-                Button {
-                    Task {
-                        isSigningIn = true
-                        do {
-                            try await auth.signInWithFacebook()
-                        } catch {
-                            errorMessage = error.localizedDescription
-                        }
-                        isSigningIn = false
-                    }
-                } label: {
-                    HStack(spacing: 12) {
-                        FacebookMark()
-                        Text(L("action_sign_in_facebook")).fontWeight(.semibold).foregroundColor(.sslText)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 52)
-                    .background(Color.sslSurface)
-                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.sslBorder, lineWidth: 1))
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
-                }
-                .buttonStyle(.plain)
-                .disabled(isSigningIn)
-                .padding(.top, 12)
-
                 SignInWithAppleButton(.signIn) { request in
                     let nonce = AuthService.randomNonceString()
                     currentAppleNonce = nonce
@@ -131,16 +106,6 @@ struct LoginView: View {
         }
         .background(Color.sslBg)
         .ignoresSafeArea(edges: .top)
-    }
-}
-
-private struct FacebookMark: View {
-    var body: some View {
-        ZStack {
-            Circle().fill(Color(red: 0.094, green: 0.467, blue: 0.949))
-            Text("f").font(.system(size: 14, weight: .bold)).foregroundColor(.white)
-        }
-        .frame(width: 20, height: 20)
     }
 }
 

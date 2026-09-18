@@ -30,27 +30,9 @@
 				<string>com.googleusercontent.apps.90825558111-8ua1j8g3il878kq8gcic2620deb83omb</string>
 			</array>
 		</dict>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>fb000000000000000</string>
-			</array>
-		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>FacebookAppID</key>
-	<string>000000000000000</string>
-	<key>FacebookClientToken</key>
-	<string>REPLACE_WITH_CLIENT_TOKEN</string>
-	<key>FacebookDisplayName</key>
-	<string>Cesto Partilhado</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>fbapi</string>
-		<string>fbauth2</string>
-		<string>fbshareextension</string>
-	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

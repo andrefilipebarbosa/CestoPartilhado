@@ -45,7 +45,6 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging-ktx")
 
     implementation("com.google.android.gms:play-services-auth:21.2.0")
-    implementation("com.facebook.android:facebook-login:17.0.0")
 
     val composeBom = platform("androidx.compose:compose-bom:2024.09.00")
     implementation(composeBom)
