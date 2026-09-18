@@ -125,4 +125,10 @@
     <string name="notification_pref_added">Added to a list</string>
     <string name="notification_pref_closed">List completed</string>
     <string name="notification_pref_edited">List updated</string>
+
+    <!-- Substitui pelos valores reais do teu Facebook App (developers.facebook.com) antes de publicar. -->
+    <string name="facebook_app_id" translatable="false">000000000000000</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb000000000000000</string>
+    <string name="facebook_client_token" translatable="false">REPLACE_WITH_CLIENT_TOKEN</string>
+    <string name="action_sign_in_facebook">Continue with Facebook</string>
 </resources>

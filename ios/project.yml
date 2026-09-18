@@ -11,6 +11,9 @@ packages:
   GoogleSignIn:
     url: https://github.com/google/GoogleSignIn-iOS
     from: 8.0.0
+  FacebookSDK:
+    url: https://github.com/facebook/facebook-ios-sdk
+    from: 17.0.0
 
 targets:
   CestoPartilhado:
@@ -45,12 +48,26 @@ targets:
               - cestopartilhado
           - CFBundleURLSchemes:
               - com.googleusercontent.apps.90825558111-8ua1j8g3il878kq8gcic2620deb83omb
+          # Substitui pelo esquema real "fb<APP_ID>" quando tiveres o Facebook App
+          # criado (ver docs/firebase-setup.md) — sem isto o login por Facebook
+          # não consegue voltar à app depois de autenticar no browser.
+          - CFBundleURLSchemes:
+              - fb000000000000000
         UIBackgroundModes:
           - remote-notification
+        FacebookAppID: "000000000000000"
+        FacebookClientToken: "REPLACE_WITH_CLIENT_TOKEN"
+        FacebookDisplayName: "Cesto Partilhado"
+        LSApplicationQueriesSchemes:
+          - fbapi
+          - fbauth2
+          - fbshareextension
     entitlements:
       path: CestoPartilhado/CestoPartilhado.entitlements
       properties:
         aps-environment: development
+        com.apple.developer.applesignin:
+          - Default
     dependencies:
       - package: Firebase
         product: FirebaseAuth
@@ -62,3 +79,7 @@ targets:
         product: FirebaseMessaging
       - package: GoogleSignIn
         product: GoogleSignIn
+      - package: FacebookSDK
+        product: FacebookLogin
+      - package: FacebookSDK
+        product: FacebookCore

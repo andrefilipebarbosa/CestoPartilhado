@@ -10,6 +10,7 @@ ios/CestoPartilhado.xcodeproj/
 ios/CestoPartilhado/GoogleService-Info.plist
 ios/DerivedData/
 ios/.build/
+ios/build/
 
 # Firebase
 firebase/functions/node_modules/

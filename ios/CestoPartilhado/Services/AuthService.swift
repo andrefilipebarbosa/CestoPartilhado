@@ -1,3 +1,6 @@
+import AuthenticationServices
+import CryptoKit
+import FacebookLogin
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
@@ -42,6 +45,73 @@ final class AuthService: ObservableObject {
         }
         let credential = GoogleAuthProvider.credential(withIDToken: idToken, accessToken: result.user.accessToken.tokenString)
         let authResult = try await Auth.auth().signIn(with: credential)
+        try await finishSignIn(authResult)
+    }
+
+    func signInWithFacebook() async throws {
+        guard let rootViewController = Self.topViewController() else {
+            throw NSError(domain: "AuthService", code: 1, userInfo: [NSLocalizedDescriptionKey: "No root view controller"])
+        }
+        let loginResult = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<LoginManagerLoginResult, Error>) in
+            LoginManager().logIn(permissions: ["email", "public_profile"], from: rootViewController) { result, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                } else if let result, !result.isCancelled {
+                    continuation.resume(returning: result)
+                } else {
+                    continuation.resume(throwing: NSError(domain: "AuthService", code: 4, userInfo: [NSLocalizedDescriptionKey: "Login cancelado"]))
+                }
+            }
+        }
+        guard let accessToken = loginResult.token else {
+            throw NSError(domain: "AuthService", code: 5, userInfo: [NSLocalizedDescriptionKey: "Missing Facebook access token"])
+        }
+        let credential = FacebookAuthProvider.credential(withAccessToken: accessToken.tokenString)
+        let authResult = try await Auth.auth().signIn(with: credential)
+        try await finishSignIn(authResult)
+    }
+
+    /// Chamar a partir de `SignInWithAppleButton(onCompletion:)` — `rawNonce` tem de
+    /// ser o mesmo (não codificado) que foi passado a `sha256` em `onRequest`.
+    func completeAppleSignIn(authorization: ASAuthorization, rawNonce: String) async throws {
+        guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+              let idTokenData = credential.identityToken,
+              let idTokenString = String(data: idTokenData, encoding: .utf8) else {
+            throw NSError(domain: "AuthService", code: 6, userInfo: [NSLocalizedDescriptionKey: "Falha ao obter credenciais da Apple"])
+        }
+        let firebaseCredential = OAuthProvider.credential(providerID: .apple, idToken: idTokenString, rawNonce: rawNonce)
+        let authResult = try await Auth.auth().signIn(with: firebaseCredential)
+
+        // A Apple só devolve o nome no primeiro login desta app — se vier, guarda-o
+        // no perfil, porque o Firebase Auth não o preenche sozinho a partir disto.
+        if let fullName = credential.fullName {
+            let displayName = PersonNameComponentsFormatter().string(from: fullName)
+                .trimmingCharacters(in: .whitespaces)
+            if !displayName.isEmpty {
+                let changeRequest = authResult.user.createProfileChangeRequest()
+                changeRequest.displayName = displayName
+                try? await changeRequest.commitChanges()
+            }
+        }
+        try await finishSignIn(authResult)
+    }
+
+    static func randomNonceString(length: Int = 32) -> String {
+        precondition(length > 0)
+        var randomBytes = [UInt8](repeating: 0, count: length)
+        let status = SecRandomCopyBytes(kSecRandomDefault, randomBytes.count, &randomBytes)
+        if status != errSecSuccess {
+            fatalError("Unable to generate nonce (OSStatus \(status)).")
+        }
+        let charset: [Character] = Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
+        return String(randomBytes.map { charset[Int($0) % charset.count] })
+    }
+
+    static func sha256(_ input: String) -> String {
+        SHA256.hash(data: Data(input.utf8)).compactMap { String(format: "%02x", $0) }.joined()
+    }
+
+    private func finishSignIn(_ authResult: AuthDataResult) async throws {
         try await upsertUserProfile(authResult.user)
         if let token = try? await Messaging.messaging().token() {
             try? await registerFcmToken(token)
@@ -50,6 +120,7 @@ final class AuthService: ObservableObject {
 
     func signOut() throws {
         GIDSignIn.sharedInstance.signOut()
+        LoginManager().logOut()
         try Auth.auth().signOut()
     }
 

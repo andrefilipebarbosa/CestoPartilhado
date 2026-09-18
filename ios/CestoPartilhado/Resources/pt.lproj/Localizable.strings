@@ -20,6 +20,7 @@
 
 "home_title" = "As tuas listas";
 "home_new_list" = "+ Nova lista";
+"action_sign_in_facebook" = "Continuar com Facebook";
 "home_greeting" = "Olá, %@";
 "home_active_count" = "%d ativas";
 "home_stores_count" = "%d lojas";

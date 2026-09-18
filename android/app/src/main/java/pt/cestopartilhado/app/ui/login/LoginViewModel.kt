@@ -26,4 +26,18 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
                 .onFailure { _errorMessage.value = it.message }
         }
     }
+
+    fun onFacebookLoginResult(accessToken: String, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            _isSigningIn.value = true
+            val result = authRepository.handleFacebookSignInResult(accessToken)
+            _isSigningIn.value = false
+            result.onSuccess { onSuccess() }
+                .onFailure { _errorMessage.value = it.message }
+        }
+    }
+
+    fun onFacebookLoginError(message: String?) {
+        _errorMessage.value = message
+    }
 }

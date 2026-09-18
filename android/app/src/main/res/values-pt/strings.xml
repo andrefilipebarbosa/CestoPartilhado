@@ -124,4 +124,6 @@
     <string name="notification_pref_added">Adicionado a uma lista</string>
     <string name="notification_pref_closed">Lista concluída</string>
     <string name="notification_pref_edited">Lista atualizada</string>
+
+    <string name="action_sign_in_facebook">Continuar com Facebook</string>
 </resources>
