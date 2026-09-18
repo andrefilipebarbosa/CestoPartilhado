@@ -29,6 +29,7 @@ class HomeViewModel(
     init {
         val uid = authRepository.currentUser?.uid
         if (uid != null) {
+            viewModelScope.launch { authRepository.refreshPublicProfileIfSignedIn() }
             viewModelScope.launch {
                 listsRepository.observeLists(uid, ShoppingList.STATUS_ACTIVE)
                     // Se a sessão terminar enquanto este ecrã ainda está a ouvir o

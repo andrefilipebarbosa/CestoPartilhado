@@ -52,6 +52,7 @@ fun InviteScreen(viewModel: InviteViewModel, listId: String, onBack: () -> Unit)
     val list by viewModel.list.collectAsState()
     val inviteResult by viewModel.inviteResult.collectAsState()
     val isInviting by viewModel.isInviting.collectAsState()
+    val memberLabels by viewModel.memberLabels.collectAsState()
     var email by remember { mutableStateOf("") }
     val context = LocalContext.current
 
@@ -171,14 +172,15 @@ fun InviteScreen(viewModel: InviteViewModel, listId: String, onBack: () -> Unit)
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                             ) {
+                                val label = if (isSelf) viewModel.displayName.ifBlank { "?" } else memberLabels[uid] ?: uid.take(8)
                                 AvatarCircle(
-                                    label = if (isSelf) viewModel.displayName.ifBlank { "?" } else "?",
+                                    label = label,
                                     size = 40.dp,
                                     background = if (uid == currentList.ownerId) CestoColors.Green else CestoColors.Orange,
                                 )
                                 Spacer(Modifier.width(12.dp))
                                 Text(
-                                    text = if (isSelf) "${viewModel.displayName} (tu)" else uid.take(8),
+                                    text = if (isSelf) "${viewModel.displayName} (tu)" else label,
                                     color = CestoColors.Text,
                                     modifier = Modifier.weight(1f),
                                 )

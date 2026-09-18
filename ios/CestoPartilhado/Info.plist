@@ -27,11 +27,15 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.90825558111-ugv4l8ekca5v0iuebpsgiuull3cqcl7i</string>
+				<string>com.googleusercontent.apps.90825558111-8ua1j8g3il878kq8gcic2620deb83omb</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 </dict>
 </plist>

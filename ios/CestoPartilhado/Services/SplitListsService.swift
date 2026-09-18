@@ -74,11 +74,12 @@ final class SplitListsService {
             "itemCount": FieldValue.increment(Int64(1)),
             "totalValue": FieldValue.increment(value),
             "updatedAt": FieldValue.serverTimestamp(),
+            "updatedBy": uid,
         ], forDocument: listsRef().document(listId))
         try await batch.commit()
     }
 
-    func removeItem(listId: String, item: SplitItem) async throws {
+    func removeItem(listId: String, item: SplitItem, uid: String) async throws {
         guard let itemId = item.id else { return }
         let batch = db.batch()
         batch.deleteDocument(itemsRef(listId).document(itemId))
@@ -86,6 +87,7 @@ final class SplitListsService {
             "itemCount": FieldValue.increment(Int64(-1)),
             "totalValue": FieldValue.increment(-item.value),
             "updatedAt": FieldValue.serverTimestamp(),
+            "updatedBy": uid,
         ], forDocument: listsRef().document(listId))
         try await batch.commit()
     }

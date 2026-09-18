@@ -1,14 +1,10 @@
 import SwiftUI
-import FirebaseCore
 import GoogleSignIn
 
 @main
 struct CestoPartilhadoApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var auth = AuthService()
-
-    init() {
-        FirebaseApp.configure()
-    }
 
     var body: some Scene {
         WindowGroup {
@@ -17,6 +13,7 @@ struct CestoPartilhadoApp: App {
                 .onOpenURL { url in
                     GIDSignIn.sharedInstance.handle(url)
                 }
+                .onAppear { AppDelegate.requestAuthorization() }
         }
     }
 }

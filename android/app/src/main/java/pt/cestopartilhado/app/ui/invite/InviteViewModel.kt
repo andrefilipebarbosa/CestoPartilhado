@@ -23,6 +23,9 @@ class InviteViewModel(
     private val _isInviting = MutableStateFlow(false)
     val isInviting: StateFlow<Boolean> = _isInviting
 
+    private val _memberLabels = MutableStateFlow<Map<String, String>>(emptyMap())
+    val memberLabels: StateFlow<Map<String, String>> = _memberLabels
+
     val isOwner: Boolean get() = _list.value?.ownerId == authRepository.currentUser?.uid
     val currentUid: String? get() = authRepository.currentUser?.uid
     val displayName: String get() = authRepository.currentUserProfile()?.displayName ?: ""
@@ -31,7 +34,20 @@ class InviteViewModel(
         viewModelScope.launch {
             listsRepository.observeListWithStores(listId)
                 .catch { }
-                .collect { _list.value = it.list }
+                .collect { result ->
+                    _list.value = result.list
+                    loadMissingLabels(result.list.memberIds)
+                }
+        }
+    }
+
+    /** Busca o nome a mostrar (publicProfiles) para cada uid novo e guarda em cache. */
+    private fun loadMissingLabels(memberIds: List<String>) {
+        val missing = memberIds.filter { it != currentUid && it !in _memberLabels.value }
+        if (missing.isEmpty()) return
+        viewModelScope.launch {
+            val labels = missing.associateWith { authRepository.getDisplayLabel(it) }
+            _memberLabels.value = _memberLabels.value + labels
         }
     }
 

@@ -40,7 +40,8 @@ class ArchivedViewModel(
     }
 
     fun recover(listId: String) {
-        viewModelScope.launch { listsRepository.setListStatus(listId, ShoppingList.STATUS_ACTIVE) }
+        val uid = currentUid ?: return
+        viewModelScope.launch { listsRepository.setListStatus(listId, ShoppingList.STATUS_ACTIVE, uid) }
     }
 
     fun deleteNow(listId: String) {

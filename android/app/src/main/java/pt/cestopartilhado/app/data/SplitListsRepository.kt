@@ -87,17 +87,19 @@ class SplitListsRepository(
             "itemCount" to FieldValue.increment(1),
             "totalValue" to FieldValue.increment(value),
             "updatedAt" to FieldValue.serverTimestamp(),
+            "updatedBy" to uid,
         ))
         batch.commit().await()
     }
 
-    suspend fun removeItem(listId: String, item: SplitItem) {
+    suspend fun removeItem(listId: String, item: SplitItem, uid: String) {
         val batch = firestore.batch()
         batch.delete(itemsRef(listId).document(item.id))
         batch.update(listsRef().document(listId), mapOf(
             "itemCount" to FieldValue.increment(-1),
             "totalValue" to FieldValue.increment(-item.value),
             "updatedAt" to FieldValue.serverTimestamp(),
+            "updatedBy" to uid,
         ))
         batch.commit().await()
     }

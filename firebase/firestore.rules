@@ -41,6 +41,16 @@ service cloud.firestore {
       allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
+    // Subconjunto público do perfil (nome, email, foto) — sem fcmTokens/prefs/
+    // activeListRef. Permite a qualquer membro de uma lista partilhada mostrar
+    // o nome de outro membro em vez do seu uid; só é legível por get() (nunca
+    // por list()), por isso nunca dá para "descobrir" utilizadores por aqui —
+    // só quem já sabe o uid (porque partilha uma lista) consegue lê-lo.
+    match /publicProfiles/{userId} {
+      allow get: if isSignedIn();
+      allow write: if isSignedIn() && request.auth.uid == userId;
+    }
+
     match /lists/{listId} {
       allow read: if isListMember(resource.data);
 

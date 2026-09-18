@@ -22,6 +22,7 @@
     <string name="privacy_policy">Privacy Policy</string>
 
     <string name="home_title">Your lists</string>
+    <string name="home_new_list">+ New list</string>
     <string name="home_greeting">Hello, %1$s</string>
     <string name="home_active_count">%1$d active</string>
     <string name="home_stores_count">%1$d stores</string>
@@ -117,4 +118,11 @@
     <string name="split_invite_email_placeholder">Invite by email</string>
     <string name="split_delete_list">Delete split list</string>
     <string name="split_owner_only_payments">Only the list creator can mark payments</string>
+
+    <string name="notification_channel_id" translatable="false">cesto_default</string>
+    <string name="notification_channel_name">List updates</string>
+    <string name="settings_notifications_title">Notifications</string>
+    <string name="notification_pref_added">Added to a list</string>
+    <string name="notification_pref_closed">List completed</string>
+    <string name="notification_pref_edited">List updated</string>
 </resources>

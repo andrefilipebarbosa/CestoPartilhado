@@ -57,7 +57,7 @@ class NewListViewModel(
             _isCreating.value = true
             val listId = listsRepository.createList(listName.trim(), uid)
             _addedStores.value.forEachIndexed { index, storeName ->
-                listsRepository.addStore(listId, storeName, index.toLong())
+                listsRepository.addStore(listId, storeName, index.toLong(), uid)
                 storeCatalogRepository.registerUsage(storeName)
             }
             _isCreating.value = false

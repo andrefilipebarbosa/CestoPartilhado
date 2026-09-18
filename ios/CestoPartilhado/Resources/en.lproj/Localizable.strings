@@ -19,6 +19,7 @@
 "privacy_policy" = "Privacy Policy";
 
 "home_title" = "Your lists";
+"home_new_list" = "+ New list";
 "home_greeting" = "Hello, %@";
 "home_active_count" = "%d active";
 "home_stores_count" = "%d stores";
@@ -113,3 +114,8 @@
 "split_invite_email_placeholder" = "Invite by email";
 "split_delete_list" = "Delete split list";
 "split_owner_only_payments" = "Only the list creator can mark payments";
+
+"settings_notifications_title" = "Notifications";
+"notification_pref_added" = "Added to a list";
+"notification_pref_closed" = "List completed";
+"notification_pref_edited" = "List updated";

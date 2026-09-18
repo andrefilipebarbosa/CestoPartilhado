@@ -19,6 +19,7 @@
 "privacy_policy" = "Política de Privacidade";
 
 "home_title" = "As tuas listas";
+"home_new_list" = "+ Nova lista";
 "home_greeting" = "Olá, %@";
 "home_active_count" = "%d ativas";
 "home_stores_count" = "%d lojas";
@@ -113,3 +114,8 @@
 "split_invite_email_placeholder" = "Convidar por email";
 "split_delete_list" = "Eliminar lista dividida";
 "split_owner_only_payments" = "Só o criador da lista pode marcar pagamentos";
+
+"settings_notifications_title" = "Notificações";
+"notification_pref_added" = "Adicionado a uma lista";
+"notification_pref_closed" = "Lista concluída";
+"notification_pref_edited" = "Lista atualizada";

@@ -65,6 +65,7 @@ fun SplitListDetailScreen(
     val state by viewModel.state.collectAsState()
     val error by viewModel.error.collectAsState()
     val inviteResult by viewModel.inviteResult.collectAsState()
+    val memberLabels by viewModel.memberLabels.collectAsState()
     var menuOpen by remember { mutableStateOf(false) }
     var newItemName by remember { mutableStateOf("") }
     var newItemValue by remember { mutableStateOf("") }
@@ -218,17 +219,19 @@ fun SplitListDetailScreen(
 
                 items(list.memberIds, key = { it }) { memberUid ->
                     val paid = memberUid in list.paidMemberIds
+                    val isSelf = memberUid == viewModel.currentUid
+                    val label = if (isSelf) viewModel.displayName.ifBlank { "?" } else memberLabels[memberUid] ?: memberUid.take(8)
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
                     ) {
                         AvatarCircle(
-                            label = "?",
+                            label = label,
                             background = if (memberUid == list.ownerId) CestoColors.Green else CestoColors.Orange,
                         )
                         Spacer(Modifier.width(12.dp))
                         Text(
-                            if (memberUid == viewModel.currentUid) "${memberUid.take(6)} (tu)" else memberUid.take(8),
+                            if (isSelf) "$label (tu)" else label,
                             color = CestoColors.Text,
                             modifier = Modifier.weight(1f),
                         )

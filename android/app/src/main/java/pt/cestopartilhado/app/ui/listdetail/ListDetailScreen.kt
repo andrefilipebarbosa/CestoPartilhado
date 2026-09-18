@@ -18,6 +18,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -25,14 +27,11 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -45,10 +44,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import pt.cestopartilhado.app.R
@@ -90,30 +92,6 @@ fun ListDetailScreen(
 
     Scaffold(
         containerColor = CestoColors.Bg,
-        bottomBar = {
-            Column(modifier = Modifier.fillMaxWidth().background(CestoColors.Surface).padding(20.dp)) {
-                if (list.status == ShoppingList.STATUS_ACTIVE) {
-                    Button(
-                        onClick = viewModel::closeList,
-                        shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = CestoColors.Green, contentColor = Color.White),
-                        modifier = Modifier.fillMaxWidth().height(52.dp),
-                    ) {
-                        Icon(Icons.Filled.Check, contentDescription = null)
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.action_close_list), fontWeight = FontWeight.Bold)
-                    }
-                } else {
-                    OutlinedButton(
-                        onClick = viewModel::reopenList,
-                        shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.fillMaxWidth().height(52.dp),
-                    ) {
-                        Text(stringResource(R.string.action_recover), fontWeight = FontWeight.Bold, color = CestoColors.GreenDark)
-                    }
-                }
-            }
-        },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(8.dp)) {
@@ -140,6 +118,17 @@ fun ListDetailScreen(
                             text = { Text(stringResource(R.string.list_detail_add_store)) },
                             onClick = { menuOpen = false; addStoreOpen = true },
                         )
+                        if (list.status == ShoppingList.STATUS_ACTIVE) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.action_close_list)) },
+                                onClick = { menuOpen = false; viewModel.closeList() },
+                            )
+                        } else {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.action_recover)) },
+                                onClick = { menuOpen = false; viewModel.reopenList() },
+                            )
+                        }
                         if (viewModel.isOwner) {
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.list_detail_delete_button), color = CestoColors.OrangeDark) },
@@ -311,6 +300,11 @@ private fun StoreSection(
                     }
                 }
 
+                val itemFieldFocusRequester = remember { FocusRequester() }
+                fun submitNewItem() {
+                    if (newItemName.isNotBlank()) { onAddItem(newItemName.trim()); newItemName = "" }
+                    itemFieldFocusRequester.requestFocus()
+                }
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
                     OutlinedTextField(
                         value = newItemName,
@@ -321,11 +315,11 @@ private fun StoreSection(
                             focusedContainerColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent,
                         ),
-                        modifier = Modifier.weight(1f),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = { submitNewItem() }),
+                        modifier = Modifier.weight(1f).focusRequester(itemFieldFocusRequester),
                     )
-                    IconButton(onClick = {
-                        if (newItemName.isNotBlank()) { onAddItem(newItemName.trim()); newItemName = "" }
-                    }) {
+                    IconButton(onClick = { submitNewItem() }) {
                         Icon(Icons.Filled.Check, contentDescription = stringResource(R.string.action_add), tint = CestoColors.GreenDark)
                     }
                 }

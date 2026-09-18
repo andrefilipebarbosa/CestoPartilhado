@@ -18,3 +18,6 @@ firebase/.firebaserc
 firebase/.runtimeconfig.json
 
 .DS_Store
+
+# Private credentials — never commit (APNs key, etc.)
+configurations/

@@ -1,4 +1,5 @@
 import SwiftUI
+import FirebaseFirestore
 import UIKit
 
 struct SettingsView: View {
@@ -9,6 +10,8 @@ struct SettingsView: View {
     @State private var isExporting = false
     @State private var exportedText: String?
     @State private var showingShareSheet = false
+    @State private var notificationPrefs: [String: Bool] = ["added": true, "closed": true, "edited": false]
+    @State private var notificationsListener: ListenerRegistration?
 
     var body: some View {
         NavigationStack {
@@ -17,6 +20,12 @@ struct SettingsView: View {
                     languageRow(LocalizationManager.languageSystem, L("settings_language_system"))
                     languageRow(LocalizationManager.languagePT, L("settings_language_pt"))
                     languageRow(LocalizationManager.languageEN, L("settings_language_en"))
+                }
+
+                Section(L("settings_notifications_title")) {
+                    notificationToggle("added", L("notification_pref_added"))
+                    notificationToggle("closed", L("notification_pref_closed"))
+                    notificationToggle("edited", L("notification_pref_edited"))
                 }
 
                 Section(L("settings_export_title")) {
@@ -48,6 +57,14 @@ struct SettingsView: View {
                     ActivityView(activityItems: [exportedText])
                 }
             }
+            .onAppear {
+                guard let uid = auth.currentUser?.uid else { return }
+                notificationsListener = auth.observeNotificationPrefs(uid: uid) { notificationPrefs = $0 }
+            }
+            .onDisappear {
+                notificationsListener?.remove()
+                notificationsListener = nil
+            }
         }
     }
 
@@ -55,6 +72,7 @@ struct SettingsView: View {
     private func languageRow(_ value: String, _ label: String) -> some View {
         Button {
             localization.setLanguage(value)
+            Task { await auth.setPreferredLanguage(localization.language) }
         } label: {
             HStack {
                 Text(label).foregroundColor(.sslText)
@@ -64,6 +82,18 @@ struct SettingsView: View {
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private func notificationToggle(_ type: String, _ label: String) -> some View {
+        Toggle(label, isOn: Binding(
+            get: { notificationPrefs[type] ?? true },
+            set: { newValue in
+                notificationPrefs[type] = newValue
+                Task { await auth.setNotificationPref(type: type, enabled: newValue) }
+            }
+        ))
+        .foregroundColor(.sslText)
     }
 
     private func exportData() {

@@ -107,7 +107,7 @@ final class ListsService {
         return doc.documentID
     }
 
-    func addStore(listId: String, name: String, order: Int) async throws {
+    func addStore(listId: String, name: String, order: Int, uid: String) async throws {
         let batch = db.batch()
         batch.setData([
             "name": name,
@@ -117,11 +117,12 @@ final class ListsService {
         batch.updateData([
             "storeCount": FieldValue.increment(Int64(1)),
             "updatedAt": FieldValue.serverTimestamp(),
+            "updatedBy": uid,
         ], forDocument: listsRef().document(listId))
         try await batch.commit()
     }
 
-    func removeStore(listId: String, storeId: String) async throws {
+    func removeStore(listId: String, storeId: String, uid: String) async throws {
         let itemsSnapshot = try await itemsRef(listId, storeId).getDocuments()
         let boughtInStore = itemsSnapshot.documents.filter { ($0.data()["bought"] as? Bool) == true }.count
 
@@ -133,6 +134,7 @@ final class ListsService {
             "itemCount": FieldValue.increment(Int64(-itemsSnapshot.documents.count)),
             "boughtCount": FieldValue.increment(Int64(-boughtInStore)),
             "updatedAt": FieldValue.serverTimestamp(),
+            "updatedBy": uid,
         ], forDocument: listsRef().document(listId))
         try await batch.commit()
     }
@@ -151,6 +153,7 @@ final class ListsService {
         batch.updateData([
             "itemCount": FieldValue.increment(Int64(1)),
             "updatedAt": FieldValue.serverTimestamp(),
+            "updatedBy": uid,
         ], forDocument: listsRef().document(listId))
         try await batch.commit()
     }
@@ -165,25 +168,28 @@ final class ListsService {
         batch.updateData([
             "boughtCount": FieldValue.increment(Int64(bought ? 1 : -1)),
             "updatedAt": FieldValue.serverTimestamp(),
+            "updatedBy": uid,
         ], forDocument: listsRef().document(listId))
         try await batch.commit()
     }
 
-    func removeItem(listId: String, storeId: String, itemId: String, wasBought: Bool) async throws {
+    func removeItem(listId: String, storeId: String, itemId: String, wasBought: Bool, uid: String) async throws {
         let batch = db.batch()
         batch.deleteDocument(itemsRef(listId, storeId).document(itemId))
         batch.updateData([
             "itemCount": FieldValue.increment(Int64(-1)),
             "boughtCount": FieldValue.increment(Int64(wasBought ? -1 : 0)),
             "updatedAt": FieldValue.serverTimestamp(),
+            "updatedBy": uid,
         ], forDocument: listsRef().document(listId))
         try await batch.commit()
     }
 
-    func setListStatus(listId: String, status: String) async throws {
+    func setListStatus(listId: String, status: String, uid: String) async throws {
         var updates: [String: Any] = [
             "status": status,
             "updatedAt": FieldValue.serverTimestamp(),
+            "updatedBy": uid,
         ]
         updates["closedAt"] = status == ShoppingList.statusClosed ? FieldValue.serverTimestamp() : NSNull()
         try await listsRef().document(listId).updateData(updates)

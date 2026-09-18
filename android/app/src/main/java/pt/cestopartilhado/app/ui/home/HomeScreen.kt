@@ -19,6 +19,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,13 +60,26 @@ fun HomeScreen(
 ) {
     val lists by viewModel.activeLists.collectAsState()
     val splitLists by viewModel.splitLists.collectAsState()
+    var fabMenuOpen by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = CestoColors.Bg,
         bottomBar = { CestoBottomBar(BottomDestination.LISTS, onNavigate) },
         floatingActionButton = {
-            FloatingActionButton(onClick = onCreateList, containerColor = CestoColors.Green, contentColor = Color.White) {
-                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.new_list_title))
+            Box {
+                FloatingActionButton(onClick = { fabMenuOpen = true }, containerColor = CestoColors.Green, contentColor = Color.White) {
+                    Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.new_list_title))
+                }
+                DropdownMenu(expanded = fabMenuOpen, onDismissRequest = { fabMenuOpen = false }) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.new_list_title)) },
+                        onClick = { fabMenuOpen = false; onCreateList() },
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.split_new_title)) },
+                        onClick = { fabMenuOpen = false; onCreateSplitList() },
+                    )
+                }
             }
         },
     ) { padding ->
@@ -97,13 +115,22 @@ fun HomeScreen(
                         fontWeight = FontWeight.SemiBold,
                         color = CestoColors.Text,
                     )
-                    if (lists.isNotEmpty()) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        if (lists.isNotEmpty()) {
+                            Text(
+                                text = stringResource(R.string.home_active_count, lists.size),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = CestoColors.Text2,
+                                modifier = Modifier.background(CestoColors.Surface2, RoundedCornerShape(999.dp)).padding(horizontal = 10.dp, vertical = 4.dp),
+                            )
+                        }
                         Text(
-                            text = stringResource(R.string.home_active_count, lists.size),
+                            text = stringResource(R.string.home_new_list),
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color = CestoColors.Text2,
-                            modifier = Modifier.background(CestoColors.Surface2, RoundedCornerShape(999.dp)).padding(horizontal = 10.dp, vertical = 4.dp),
+                            color = CestoColors.GreenDark,
+                            modifier = Modifier.clickable(onClick = onCreateList),
                         )
                     }
                 }
@@ -161,6 +188,7 @@ fun HomeScreen(
                 items(splitLists, key = { "split-${it.id}" }) { list ->
                     SplitListCard(
                         list = list,
+                        currentUid = viewModel.currentUid,
                         onClick = { onOpenSplitList(list.id) },
                         modifier = Modifier.padding(bottom = 14.dp),
                     )
@@ -239,7 +267,7 @@ private fun ListCard(list: ShoppingList, selfLabel: String, onClick: () -> Unit,
 }
 
 @Composable
-private fun SplitListCard(list: SplitList, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun SplitListCard(list: SplitList, currentUid: String?, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -258,7 +286,7 @@ private fun SplitListCard(list: SplitList, onClick: () -> Unit, modifier: Modifi
                 modifier = Modifier.padding(top = 6.dp),
             )
         }
-        if (list.isLocked) {
+        if (list.paidMemberIds.contains(currentUid)) {
             Text(
                 stringResource(R.string.split_status_paid),
                 style = MaterialTheme.typography.labelMedium,

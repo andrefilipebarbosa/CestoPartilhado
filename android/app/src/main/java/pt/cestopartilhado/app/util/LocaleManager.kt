@@ -34,6 +34,13 @@ object LocaleManager {
             .apply()
     }
 
+    /** "pt" ou "en" — resolve "system" para o idioma do telefone (só a app suporta estes dois). */
+    fun resolvedLanguage(context: Context): String {
+        val setting = currentSetting(context)
+        if (setting != LANGUAGE_SYSTEM) return setting
+        return if (Locale.getDefault().language == LANGUAGE_PT) LANGUAGE_PT else LANGUAGE_EN
+    }
+
     /** Aplica o idioma guardado a um Context — chamar em `attachBaseContext`. */
     fun wrap(context: Context): Context {
         val language = currentSetting(context)

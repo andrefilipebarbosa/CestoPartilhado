@@ -17,17 +17,18 @@ final class ListDetailViewModel: ObservableObject {
         observation = service.observeListWithStores(listId: listId) { [weak self] result in
             self?.state = result
         }
+        Task { await AuthService.setActiveListRef("lists/\(listId)") }
     }
 
     func addStore(_ name: String) {
-        guard let listId = state?.list.id else { return }
+        guard let listId = state?.list.id, let uid = currentUid else { return }
         let nextOrder = state?.stores.count ?? 0
-        Task { try? await service.addStore(listId: listId, name: name, order: nextOrder) }
+        Task { try? await service.addStore(listId: listId, name: name, order: nextOrder, uid: uid) }
     }
 
     func removeStore(_ storeId: String) {
-        guard let listId = state?.list.id else { return }
-        Task { try? await service.removeStore(listId: listId, storeId: storeId) }
+        guard let listId = state?.list.id, let uid = currentUid else { return }
+        Task { try? await service.removeStore(listId: listId, storeId: storeId, uid: uid) }
     }
 
     func addItem(storeId: String, name: String) {
@@ -41,18 +42,18 @@ final class ListDetailViewModel: ObservableObject {
     }
 
     func removeItem(storeId: String, itemId: String, wasBought: Bool) {
-        guard let listId = state?.list.id else { return }
-        Task { try? await service.removeItem(listId: listId, storeId: storeId, itemId: itemId, wasBought: wasBought) }
+        guard let listId = state?.list.id, let uid = currentUid else { return }
+        Task { try? await service.removeItem(listId: listId, storeId: storeId, itemId: itemId, wasBought: wasBought, uid: uid) }
     }
 
     func closeList() {
-        guard let listId = state?.list.id else { return }
-        Task { try? await service.setListStatus(listId: listId, status: ShoppingList.statusClosed) }
+        guard let listId = state?.list.id, let uid = currentUid else { return }
+        Task { try? await service.setListStatus(listId: listId, status: ShoppingList.statusClosed, uid: uid) }
     }
 
     func reopenList() {
-        guard let listId = state?.list.id else { return }
-        Task { try? await service.setListStatus(listId: listId, status: ShoppingList.statusActive) }
+        guard let listId = state?.list.id, let uid = currentUid else { return }
+        Task { try? await service.setListStatus(listId: listId, status: ShoppingList.statusActive, uid: uid) }
     }
 
     /// As regras do Firestore também impedem isto — aqui só evitamos mostrar a opção a quem não é dono.
@@ -64,7 +65,10 @@ final class ListDetailViewModel: ObservableObject {
         }
     }
 
-    func stop() { observation?.stop() }
+    func stop() {
+        observation?.stop()
+        Task { await AuthService.setActiveListRef(nil) }
+    }
 }
 
 struct ListDetailView: View {
@@ -143,28 +147,6 @@ struct ListDetailView: View {
                 }
                 .padding(20)
             }
-
-            Divider()
-            VStack {
-                if state.list.status == ShoppingList.statusActive {
-                    Button {
-                        viewModel.closeList()
-                    } label: {
-                        Label(L("action_close_list"), systemImage: "checkmark")
-                            .fontWeight(.bold).frame(maxWidth: .infinity).frame(height: 52)
-                    }
-                    .buttonStyle(.borderedProminent).tint(.sslGreen)
-                } else {
-                    Button {
-                        viewModel.reopenList()
-                    } label: {
-                        Text(L("action_recover")).fontWeight(.bold).frame(maxWidth: .infinity).frame(height: 52)
-                    }
-                    .buttonStyle(.bordered).tint(.sslGreen)
-                }
-            }
-            .padding(20)
-            .background(Color.sslSurface)
         }
         .background(Color.sslBg)
         .navigationTitle(state.list.name)
@@ -173,6 +155,11 @@ struct ListDetailView: View {
                 Menu {
                     Button(L("invite_title")) { showingInvite = true }
                     Button(L("list_detail_add_store")) { addingStore = true }
+                    if state.list.status == ShoppingList.statusActive {
+                        Button(L("action_close_list")) { viewModel.closeList() }
+                    } else {
+                        Button(L("action_recover")) { viewModel.reopenList() }
+                    }
                     if viewModel.isOwner {
                         Button(L("list_detail_delete_button"), role: .destructive) {
                             viewModel.deleteList { dismiss() }
@@ -242,12 +229,12 @@ private struct StoreSectionView: View {
                 }
 
                 HStack {
-                    TextField(L("item_name_placeholder"), text: $newItemName).textFieldStyle(.roundedBorder)
+                    TextField(L("item_name_placeholder"), text: $newItemName)
+                        .textFieldStyle(.roundedBorder)
+                        .submitLabel(.done)
+                        .onSubmit { submitNewItem() }
                     Button {
-                        if !newItemName.trimmingCharacters(in: .whitespaces).isEmpty {
-                            onAddItem(newItemName.trimmingCharacters(in: .whitespaces))
-                            newItemName = ""
-                        }
+                        submitNewItem()
                     } label: { Image(systemName: "plus.circle.fill").foregroundColor(.sslGreenDark) }
                 }
 
@@ -260,5 +247,14 @@ private struct StoreSectionView: View {
         .background(Color.sslSurface)
         .overlay(RoundedRectangle(cornerRadius: 18).stroke(Color.sslBorder, lineWidth: 1))
         .clipShape(RoundedRectangle(cornerRadius: 18))
+    }
+
+    /// Chamado ao tocar em "return" no teclado ou no botão — o campo mantém o
+    /// foco depois de limpo, para se poder escrever logo o artigo seguinte.
+    private func submitNewItem() {
+        let trimmed = newItemName.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return }
+        onAddItem(trimmed)
+        newItemName = ""
     }
 }

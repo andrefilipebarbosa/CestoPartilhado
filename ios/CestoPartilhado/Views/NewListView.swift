@@ -108,7 +108,7 @@ struct NewListView: View {
             do {
                 let listId = try await listsService.createList(name: name.trimmingCharacters(in: .whitespaces), ownerUid: uid)
                 for (index, store) in addedStores.enumerated() {
-                    try await listsService.addStore(listId: listId, name: store, order: index)
+                    try await listsService.addStore(listId: listId, name: store, order: index, uid: uid)
                     try? await catalogService.registerUsage(store)
                 }
             } catch {}

@@ -59,6 +59,9 @@ struct HomeView: View {
                             .padding(.horizontal, 10).padding(.vertical, 4)
                             .background(Capsule().fill(Color.sslSurface2))
                     }
+                    Button(L("home_new_list")) { showingNewList = true }
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(.sslGreenDark)
                 }
 
                 if viewModel.lists.isEmpty {
@@ -89,7 +92,7 @@ struct HomeView: View {
                 } else {
                     ForEach(viewModel.splitLists) { list in
                         NavigationLink(value: SplitListRoute(id: list.id ?? "")) {
-                            SplitListCardView(list: list)
+                            SplitListCardView(list: list, currentUid: auth.currentUser?.uid)
                         }
                         .buttonStyle(.plain)
                     }
@@ -106,7 +109,10 @@ struct HomeView: View {
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button { showingNewList = true } label: {
+                Menu {
+                    Button(L("new_list_title")) { showingNewList = true }
+                    Button(L("split_new_title")) { showingNewSplitList = true }
+                } label: {
                     Image(systemName: "plus.circle.fill").foregroundColor(.sslGreen)
                 }
             }
@@ -171,6 +177,7 @@ private struct ListCardView: View {
 
 private struct SplitListCardView: View {
     let list: SplitList
+    let currentUid: String?
 
     var body: some View {
         HStack {
@@ -180,7 +187,7 @@ private struct SplitListCardView: View {
                     .font(.footnote).foregroundColor(.sslText2)
             }
             Spacer()
-            if list.isLocked {
+            if let currentUid, list.paidMemberIds.contains(currentUid) {
                 Text(L("split_status_paid"))
                     .font(.caption.weight(.semibold))
                     .foregroundColor(.sslGreenDark)

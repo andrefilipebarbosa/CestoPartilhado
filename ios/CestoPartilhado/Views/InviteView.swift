@@ -6,6 +6,7 @@ final class InviteViewModel: ObservableObject {
     @Published var list: ShoppingList?
     @Published var inviteResult: String?
     @Published var isInviting = false
+    @Published var memberLabels: [String: String] = [:]
 
     private let service = ListsService()
     private var observation: ListObservation?
@@ -19,6 +20,18 @@ final class InviteViewModel: ObservableObject {
         observation?.stop()
         observation = service.observeListWithStores(listId: listId) { [weak self] result in
             self?.list = result.list
+            self?.loadMissingLabels(result.list.memberIds)
+        }
+    }
+
+    /// Busca o nome a mostrar (publicProfiles) para cada uid novo e guarda em cache.
+    private func loadMissingLabels(_ memberIds: [String]) {
+        let missing = memberIds.filter { $0 != currentUid && memberLabels[$0] == nil }
+        guard !missing.isEmpty else { return }
+        Task {
+            for uid in missing {
+                memberLabels[uid] = await AuthService.getDisplayLabel(uid)
+            }
         }
     }
 
@@ -104,13 +117,14 @@ struct InviteView: View {
 
                     ForEach(list.memberIds, id: \.self) { memberUid in
                         let isSelf = memberUid == viewModel.uid
+                        let label = isSelf ? (auth.displayName.isEmpty ? "?" : auth.displayName) : (viewModel.memberLabels[memberUid] ?? String(memberUid.prefix(8)))
                         HStack(spacing: 12) {
                             AvatarCircle(
-                                label: isSelf ? (auth.displayName.isEmpty ? "?" : auth.displayName) : "?",
+                                label: label,
                                 size: 40,
                                 background: memberUid == list.ownerId ? .sslGreen : .sslOrange
                             )
-                            Text(isSelf ? "\(auth.displayName) (tu)" : String(memberUid.prefix(8)))
+                            Text(isSelf ? "\(label) (tu)" : label)
                                 .foregroundColor(.sslText)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             Text(memberUid == list.ownerId ? L("invite_role_owner") : L("invite_role_editor"))

@@ -12,6 +12,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -38,6 +39,7 @@ fun SettingsScreen(
     onSignedOut: () -> Unit,
 ) {
     val isExporting by viewModel.isExporting.collectAsState()
+    val notificationPrefs by viewModel.notificationPrefs.collectAsState()
     val context = androidx.compose.ui.platform.LocalContext.current
 
     Scaffold(
@@ -58,6 +60,13 @@ fun SettingsScreen(
             LanguageOption(LocaleManager.LANGUAGE_SYSTEM, stringResource(R.string.settings_language_system), viewModel, context)
             LanguageOption(LocaleManager.LANGUAGE_PT, stringResource(R.string.settings_language_pt), viewModel, context)
             LanguageOption(LocaleManager.LANGUAGE_EN, stringResource(R.string.settings_language_en), viewModel, context)
+
+            Spacer(Modifier.height(28.dp))
+            Text(stringResource(R.string.settings_notifications_title), style = MaterialTheme.typography.titleMedium, color = CestoColors.Text, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(8.dp))
+            NotificationToggle(stringResource(R.string.notification_pref_added), notificationPrefs["added"] ?: true) { viewModel.setNotificationPref("added", it) }
+            NotificationToggle(stringResource(R.string.notification_pref_closed), notificationPrefs["closed"] ?: true) { viewModel.setNotificationPref("closed", it) }
+            NotificationToggle(stringResource(R.string.notification_pref_edited), notificationPrefs["edited"] ?: false) { viewModel.setNotificationPref("edited", it) }
 
             Spacer(Modifier.height(28.dp))
             Text(stringResource(R.string.settings_export_title), style = MaterialTheme.typography.titleMedium, color = CestoColors.Text, fontWeight = FontWeight.SemiBold)
@@ -88,6 +97,17 @@ fun SettingsScreen(
                 Text(stringResource(R.string.settings_sign_out), color = CestoColors.OrangeDark, fontWeight = FontWeight.SemiBold)
             }
         }
+    }
+}
+
+@Composable
+private fun NotificationToggle(label: String, checked: Boolean, onToggle: (Boolean) -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+    ) {
+        Text(label, color = CestoColors.Text, modifier = Modifier.weight(1f))
+        Switch(checked = checked, onCheckedChange = onToggle)
     }
 }
 

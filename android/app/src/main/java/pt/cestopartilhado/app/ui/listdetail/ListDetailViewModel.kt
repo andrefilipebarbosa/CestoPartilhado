@@ -2,6 +2,8 @@ package pt.cestopartilhado.app.ui.listdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -26,6 +28,9 @@ class ListDetailViewModel(
     val displayName: String get() = authRepository.currentUserProfile()?.displayName ?: ""
 
     fun load(listId: String) {
+        // Marca este utilizador como "a ver" a lista para as Cloud Functions
+        // não lhe enviarem push notifications sobre alterações que ele próprio vê em direto.
+        viewModelScope.launch { authRepository.setActiveListRef("lists/$listId") }
         viewModelScope.launch {
             listsRepository.observeListWithStores(listId)
                 .catch { _error.value = it.message ?: "error" }
@@ -33,15 +38,22 @@ class ListDetailViewModel(
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        CoroutineScope(Dispatchers.IO).launch { authRepository.setActiveListRef(null) }
+    }
+
     fun addStore(name: String) {
         val listId = _state.value?.list?.id ?: return
+        val uid = currentUid ?: return
         val nextOrder = (_state.value?.stores?.size ?: 0).toLong()
-        viewModelScope.launch { listsRepository.addStore(listId, name, nextOrder) }
+        viewModelScope.launch { listsRepository.addStore(listId, name, nextOrder, uid) }
     }
 
     fun removeStore(storeId: String) {
         val listId = _state.value?.list?.id ?: return
-        viewModelScope.launch { listsRepository.removeStore(listId, storeId) }
+        val uid = currentUid ?: return
+        viewModelScope.launch { listsRepository.removeStore(listId, storeId, uid) }
     }
 
     fun addItem(storeId: String, name: String, note: String) {
@@ -58,17 +70,20 @@ class ListDetailViewModel(
 
     fun removeItem(storeId: String, itemId: String, wasBought: Boolean) {
         val listId = _state.value?.list?.id ?: return
-        viewModelScope.launch { listsRepository.removeItem(listId, storeId, itemId, wasBought) }
+        val uid = currentUid ?: return
+        viewModelScope.launch { listsRepository.removeItem(listId, storeId, itemId, wasBought, uid) }
     }
 
     fun closeList() {
         val listId = _state.value?.list?.id ?: return
-        viewModelScope.launch { listsRepository.setListStatus(listId, ShoppingList.STATUS_CLOSED) }
+        val uid = currentUid ?: return
+        viewModelScope.launch { listsRepository.setListStatus(listId, ShoppingList.STATUS_CLOSED, uid) }
     }
 
     fun reopenList() {
         val listId = _state.value?.list?.id ?: return
-        viewModelScope.launch { listsRepository.setListStatus(listId, ShoppingList.STATUS_ACTIVE) }
+        val uid = currentUid ?: return
+        viewModelScope.launch { listsRepository.setListStatus(listId, ShoppingList.STATUS_ACTIVE, uid) }
     }
 
     /** As regras do Firestore também impedem isto — aqui só evitamos mostrar o botão a quem não é dono. */

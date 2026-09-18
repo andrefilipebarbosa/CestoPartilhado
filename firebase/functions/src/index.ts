@@ -9,6 +9,8 @@ import * as logger from "firebase-functions/logger";
 initializeApp();
 const db = getFirestore();
 
+export { onListWritten, onSplitListWritten } from "./notifications";
+
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
 /**

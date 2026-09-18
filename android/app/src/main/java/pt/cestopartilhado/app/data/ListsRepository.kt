@@ -119,7 +119,7 @@ class ListsRepository(
     // só para mostrar um resumo no ecrã principal.
     private fun listDoc(listId: String) = listsRef().document(listId)
 
-    suspend fun addStore(listId: String, name: String, order: Long) {
+    suspend fun addStore(listId: String, name: String, order: Long, uid: String) {
         val batch = firestore.batch()
         batch.set(storesRef(listId).document(), mapOf(
             "name" to name,
@@ -129,11 +129,12 @@ class ListsRepository(
         batch.update(listDoc(listId), mapOf(
             "storeCount" to com.google.firebase.firestore.FieldValue.increment(1),
             "updatedAt" to com.google.firebase.firestore.FieldValue.serverTimestamp(),
+            "updatedBy" to uid,
         ))
         batch.commit().await()
     }
 
-    suspend fun removeStore(listId: String, storeId: String) {
+    suspend fun removeStore(listId: String, storeId: String, uid: String) {
         val items = itemsRef(listId, storeId).get().await()
         val boughtInStore = items.documents.count { it.getBoolean("bought") == true }
 
@@ -145,6 +146,7 @@ class ListsRepository(
             "itemCount" to com.google.firebase.firestore.FieldValue.increment(-items.size().toLong()),
             "boughtCount" to com.google.firebase.firestore.FieldValue.increment(-boughtInStore.toLong()),
             "updatedAt" to com.google.firebase.firestore.FieldValue.serverTimestamp(),
+            "updatedBy" to uid,
         ))
         batch.commit().await()
     }
@@ -163,6 +165,7 @@ class ListsRepository(
         batch.update(listDoc(listId), mapOf(
             "itemCount" to com.google.firebase.firestore.FieldValue.increment(1),
             "updatedAt" to com.google.firebase.firestore.FieldValue.serverTimestamp(),
+            "updatedBy" to uid,
         ))
         batch.commit().await()
     }
@@ -177,25 +180,28 @@ class ListsRepository(
         batch.update(listDoc(listId), mapOf(
             "boughtCount" to com.google.firebase.firestore.FieldValue.increment(if (bought) 1 else -1),
             "updatedAt" to com.google.firebase.firestore.FieldValue.serverTimestamp(),
+            "updatedBy" to uid,
         ))
         batch.commit().await()
     }
 
-    suspend fun removeItem(listId: String, storeId: String, itemId: String, wasBought: Boolean) {
+    suspend fun removeItem(listId: String, storeId: String, itemId: String, wasBought: Boolean, uid: String) {
         val batch = firestore.batch()
         batch.delete(itemsRef(listId, storeId).document(itemId))
         batch.update(listDoc(listId), mapOf(
             "itemCount" to com.google.firebase.firestore.FieldValue.increment(-1),
             "boughtCount" to com.google.firebase.firestore.FieldValue.increment(if (wasBought) -1 else 0),
             "updatedAt" to com.google.firebase.firestore.FieldValue.serverTimestamp(),
+            "updatedBy" to uid,
         ))
         batch.commit().await()
     }
 
-    suspend fun setListStatus(listId: String, status: String) {
+    suspend fun setListStatus(listId: String, status: String, uid: String) {
         val updates = mutableMapOf<String, Any?>(
             "status" to status,
             "updatedAt" to com.google.firebase.firestore.FieldValue.serverTimestamp(),
+            "updatedBy" to uid,
         )
         updates["closedAt"] = if (status == ShoppingList.STATUS_CLOSED)
             com.google.firebase.firestore.FieldValue.serverTimestamp() else null

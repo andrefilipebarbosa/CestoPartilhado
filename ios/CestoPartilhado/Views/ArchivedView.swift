@@ -23,7 +23,8 @@ final class ArchivedViewModel: ObservableObject {
     }
 
     func recover(_ listId: String) {
-        Task { try? await service.setListStatus(listId: listId, status: ShoppingList.statusActive) }
+        guard let uid = currentUid else { return }
+        Task { try? await service.setListStatus(listId: listId, status: ShoppingList.statusActive, uid: uid) }
     }
 
     func deleteNow(_ listId: String) {

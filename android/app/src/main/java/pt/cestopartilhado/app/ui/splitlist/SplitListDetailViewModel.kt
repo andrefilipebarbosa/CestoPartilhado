@@ -2,6 +2,8 @@ package pt.cestopartilhado.app.ui.splitlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -24,15 +26,38 @@ class SplitListDetailViewModel(
     private val _inviteResult = MutableStateFlow<String?>(null)
     val inviteResult: StateFlow<String?> = _inviteResult
 
+    private val _memberLabels = MutableStateFlow<Map<String, String>>(emptyMap())
+    val memberLabels: StateFlow<Map<String, String>> = _memberLabels
+
     val currentUid: String? get() = authRepository.currentUser?.uid
     val isOwner: Boolean get() = _state.value?.list?.ownerId == currentUid
+    val displayName: String get() = authRepository.currentUserProfile()?.displayName ?: ""
 
     fun load(listId: String) {
+        viewModelScope.launch { authRepository.setActiveListRef("splitLists/$listId") }
         viewModelScope.launch {
             splitListsRepository.observeListWithItems(listId)
                 .catch { _error.value = it.message ?: "error" }
-                .collect { _state.value = it }
+                .collect { result ->
+                    _state.value = result
+                    loadMissingLabels(result.list.memberIds)
+                }
         }
+    }
+
+    /** Busca o nome a mostrar (publicProfiles) para cada uid novo e guarda em cache. */
+    private fun loadMissingLabels(memberIds: List<String>) {
+        val missing = memberIds.filter { it != currentUid && it !in _memberLabels.value }
+        if (missing.isEmpty()) return
+        viewModelScope.launch {
+            val labels = missing.associateWith { authRepository.getDisplayLabel(it) }
+            _memberLabels.value = _memberLabels.value + labels
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        CoroutineScope(Dispatchers.IO).launch { authRepository.setActiveListRef(null) }
     }
 
     fun addItem(name: String, value: Double) {
@@ -43,7 +68,8 @@ class SplitListDetailViewModel(
 
     fun removeItem(item: SplitItem) {
         val listId = _state.value?.list?.id ?: return
-        viewModelScope.launch { splitListsRepository.removeItem(listId, item) }
+        val uid = currentUid ?: return
+        viewModelScope.launch { splitListsRepository.removeItem(listId, item, uid) }
     }
 
     /** Só têm sucesso nas regras do Firestore se quem chama for o dono da lista. */

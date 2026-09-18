@@ -4,6 +4,7 @@ import SwiftUI
 final class SplitListDetailViewModel: ObservableObject {
     @Published var state: SplitListWithItems?
     @Published var inviteResult: String?
+    @Published var memberLabels: [String: String] = [:]
 
     private let service = SplitListsService()
     private var observation: ListObservation?
@@ -16,6 +17,19 @@ final class SplitListDetailViewModel: ObservableObject {
         observation?.stop()
         observation = service.observeListWithItems(listId: listId) { [weak self] result in
             self?.state = result
+            self?.loadMissingLabels(result.list.memberIds)
+        }
+        Task { await AuthService.setActiveListRef("splitLists/\(listId)") }
+    }
+
+    /// Busca o nome a mostrar (publicProfiles) para cada uid novo e guarda em cache.
+    private func loadMissingLabels(_ memberIds: [String]) {
+        let missing = memberIds.filter { $0 != currentUid && memberLabels[$0] == nil }
+        guard !missing.isEmpty else { return }
+        Task {
+            for uid in missing {
+                memberLabels[uid] = await AuthService.getDisplayLabel(uid)
+            }
         }
     }
 
@@ -25,8 +39,8 @@ final class SplitListDetailViewModel: ObservableObject {
     }
 
     func removeItem(_ item: SplitItem) {
-        guard let listId = state?.list.id else { return }
-        Task { try? await service.removeItem(listId: listId, item: item) }
+        guard let listId = state?.list.id, let uid = currentUid else { return }
+        Task { try? await service.removeItem(listId: listId, item: item, uid: uid) }
     }
 
     func setMemberPaid(_ memberUid: String, paid: Bool) {
@@ -49,7 +63,10 @@ final class SplitListDetailViewModel: ObservableObject {
         }
     }
 
-    func stop() { observation?.stop() }
+    func stop() {
+        observation?.stop()
+        Task { await AuthService.setActiveListRef(nil) }
+    }
 }
 
 private func formatValue(_ value: Double) -> String { String(format: "%.2f €", value) }
@@ -143,10 +160,11 @@ struct SplitListDetailView: View {
                 ForEach(list.memberIds, id: \.self) { memberUid in
                     let paid = list.paidMemberIds.contains(memberUid)
                     let isSelf = memberUid == viewModel.currentUid
+                    let label = isSelf ? (auth.displayName.isEmpty ? "?" : auth.displayName) : (viewModel.memberLabels[memberUid] ?? String(memberUid.prefix(8)))
                     HStack(spacing: 12) {
-                        AvatarCircle(label: isSelf ? (auth.displayName.isEmpty ? "?" : auth.displayName) : "?",
+                        AvatarCircle(label: label,
                                      background: memberUid == list.ownerId ? .sslGreen : .sslOrange)
-                        Text(isSelf ? "\(auth.displayName) (tu)" : String(memberUid.prefix(8)))
+                        Text(isSelf ? "\(label) (tu)" : label)
                             .foregroundColor(.sslText)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         Text(formatValue(list.shareValue)).foregroundColor(.sslText2)

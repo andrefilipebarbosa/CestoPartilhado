@@ -72,7 +72,7 @@ pendentes a quem cria conta pela primeira vez).
 ## 6. App iOS
 
 1. Firebase console → Adicionar app → iOS.
-2. Bundle ID: `pt.cestopartilhado.app` (tem de corresponder ao
+2. Bundle ID: `com.cestopartilhado` (tem de corresponder ao
    `PRODUCT_BUNDLE_IDENTIFIER` em `ios/project.yml`).
 3. Descarrega `GoogleService-Info.plist` e coloca-o em
    `ios/CestoPartilhado/GoogleService-Info.plist`.
@@ -88,6 +88,43 @@ pendentes a quem cria conta pela primeira vez).
    ```
    Na primeira abertura o Xcode vai resolver os pacotes Swift (Firebase,
    GoogleSignIn) — precisa de ligação à internet nesse momento.
+
+## 7. Cloud Messaging (push notifications)
+
+O código das duas apps e das Cloud Functions (`onListWritten`,
+`onSplitListWritten` em `firebase/functions/src/notifications.ts`) já está
+pronto, mas faltam dois passos manuais antes de as notificações chegarem a
+sério a um telemóvel:
+
+1. **Publicar as Cloud Functions** — ver secção 4 acima. As notificações só
+   são *enviadas* quando estas funções estiverem publicadas (o que exige o
+   plano Blaze); até lá o código do cliente (registo de token, ecrã de
+   preferências) funciona na mesma, só não chega nada porque não há ninguém
+   do outro lado a disparar o envio.
+2. **Chave APNs para o iOS** — a Google Cloud Messaging não consegue entregar
+   pushes a dispositivos iOS sem isto; é o único passo que só o dono da conta
+   Apple Developer consegue fazer:
+   1. [developer.apple.com](https://developer.apple.com/account) → Certificates,
+      Identifiers & Profiles → Keys → "+" → ativa "Apple Push Notifications
+      service (APNs)" → cria a chave e descarrega o ficheiro `AuthKey_XXXXXXXXXX.p8`
+      (só é possível descarregar uma vez — guarda-o bem).
+   2. Anota o **Key ID** (aparece ao lado do nome da chave) e o **Team ID**
+      (canto superior direito da página, ou em Membership).
+   3. Firebase console → Project settings → Cloud Messaging → Apple app
+      configuration (aparece depois de a app iOS estar registada, secção 6) →
+      "Upload" em **APNs Authentication Key** → carrega o `.p8` e preenche Key
+      ID + Team ID.
+   4. Não é preciso mexer no Xcode/`project.yml` para isto — o
+      `UIBackgroundModes: remote-notification` e o registo do token já estão
+      configurados no código.
+
+O Android não precisa de nenhum passo manual equivalente — o
+`google-services.json` já existente é suficiente para o FCM.
+
+Cada utilizador escolhe em Definições → Notificações quais dos 3 tipos quer
+receber (por omissão: "adicionado a uma lista" e "lista concluída" ligados,
+"lista atualizada" desligado); as Cloud Functions nunca notificam quem fez a
+própria alteração, nem quem está com o ecrã dessa lista aberto nesse momento.
 
 ## Notas
 

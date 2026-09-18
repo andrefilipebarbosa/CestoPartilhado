@@ -1,6 +1,6 @@
 name: CestoPartilhado
 options:
-  bundleIdPrefix: pt.cestopartilhado
+  bundleIdPrefix: com.cestopartilhado
   deploymentTarget:
     iOS: "16.0"
 
@@ -24,7 +24,9 @@ targets:
       - path: CestoPartilhado/GoogleService-Info.plist
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: pt.cestopartilhado.app
+        PRODUCT_BUNDLE_IDENTIFIER: com.cestopartilhado
+        DEVELOPMENT_TEAM: 6L2V6Z5JJP
+        CODE_SIGN_STYLE: Automatic
         INFOPLIST_KEY_CFBundleDisplayName: "Cesto Partilhado"
         MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "1"
@@ -42,7 +44,13 @@ targets:
           - CFBundleURLSchemes:
               - cestopartilhado
           - CFBundleURLSchemes:
-              - com.googleusercontent.apps.90825558111-ugv4l8ekca5v0iuebpsgiuull3cqcl7i
+              - com.googleusercontent.apps.90825558111-8ua1j8g3il878kq8gcic2620deb83omb
+        UIBackgroundModes:
+          - remote-notification
+    entitlements:
+      path: CestoPartilhado/CestoPartilhado.entitlements
+      properties:
+        aps-environment: development
     dependencies:
       - package: Firebase
         product: FirebaseAuth
@@ -50,5 +58,7 @@ targets:
         product: FirebaseFirestore
       - package: Firebase
         product: FirebaseFunctions
+      - package: Firebase
+        product: FirebaseMessaging
       - package: GoogleSignIn
         product: GoogleSignIn
